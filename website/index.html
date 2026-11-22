@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karakuri: home automation flows that try again</title>
+<meta name="description" content="Karakuri is an open-source home automation flow engine and dashboard. Give any node a retry policy, route a node that still fails onto an error branch, and build wall-tablet dashboards in the same app.">
+<link rel="icon" href="assets/kuri.svg" type="image/svg+xml">
+<script>
+  // Apply the stored theme before CSS paints.
+  (function () {
+    var d = document.documentElement;
+    d.classList.add("js");
+    try {
+      var t = localStorage.getItem("karakuri-theme-kawaii");
+      if (t === "light" || t === "dark") d.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sky" aria-hidden="true"><span class="stars stars-a"></span><span class="stars stars-b"></span><span class="moon"></span></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#top">
+      <img src="assets/kuri.svg" alt="" width="40" height="40">
+      <span>Karakuri</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li class="nav-wide"><a href="#integrations">Integrations</a></li>
+        <li><a href="#dashboards">Dashboards</a></li>
+        <li><a href="#agents">Agents</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="docs.html">Docs</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="theme-seg" role="group" aria-label="Color theme">
+        <button type="button" data-theme-choice="auto" aria-pressed="true">Auto</button>
+        <button type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+      </div>
+      <a class="btn btn-small btn-navy" href="https://github.com/grmrgecko/karakuri">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="hero-text">
+      <p class="chip-row"><span class="chip chip-teal">Open source, MIT</span></p>
+      <h1 id="hero-title">Home automation flows that try again, then take the error branch</h1>
+      <p class="lead">Karakuri is a flow engine and dashboard for your home. Wire triggers, logic, and actions on a canvas, give any node a retry policy, and send a node that still fails down an error branch so the run keeps going.</p>
+      <div class="cta">
+        <a class="btn btn-pink" href="#install">Get started</a>
+        <a class="btn btn-soft" href="https://github.com/grmrgecko/karakuri">View on GitHub</a>
+      </div>
+      <p class="works-with">Works with Home Assistant, openHAB, ESPHome, MQTT, Zigbee2MQTT, and Frigate, and with <a href="#agents">your other computers</a>: enroll a NAS, a PC, a Mac, or a Raspberry Pi and use it in flows.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stage-mascot">
+        <div class="bubble bubble-hero" data-bubble aria-live="polite">Turn the gold key on my back and I will run the flow below. The hall light is a little unreliable today.</div>
+        <div class="mascot-wrap" data-mascot>
+          <svg class="mascot" viewBox="0 0 64 64" role="img" aria-labelledby="mascot-title">
+            <title id="mascot-title">Karakuri mascot</title>
+            <g transform="matrix(.88 0 0 .88 3.84 2.96)" stroke-linecap="round" stroke-linejoin="round">
+              <g class="m-outline" stroke="#fff3d6" fill="#fff3d6">
+                <path stroke-width="4.2" d="m42.96 4.23.19-1.47h1.7l.19 1.47 1.18.49 1.17-.9 1.19 1.19-.9 1.17.49 1.18 1.47.19v1.7l-1.47.19-.49 1.18.9 1.17-1.19 1.19-1.17-.9-1.18.49-.19 1.47h-1.7l-.19-1.47-1.18-.49-1.17.9-1.19-1.19.9-1.17-.49-1.18-1.47-.19v-1.7l1.47-.19.49-1.18-.9-1.17 1.19-1.19 1.17.9Z"/>
+                <g transform="rotate(-48 26.132 -12.452)">
+                  <g class="key-spin">
+                    <path stroke-width="7.6" d="M0 4V-8"/>
+                    <rect width="5.4" height="2.8" x="-2.7" y="-7.2" stroke-width="4.4" rx="1"/>
+                    <path stroke-width="4.5" d="M0-10.5c-2.6-4.5-8.8-5.1-8.8 0s6.2 4.5 8.8 0 8.8-5.1 8.8 0S2.6-6 0-10.5"/>
+                  </g>
+                </g>
+                <path stroke-width="5" d="M15 22C7 21 3 29 5 37c1 5 6 5 6 1 0-5 1-10 6-12Zm34 0c8-1 12 7 10 15-1 5-6 5-6 1 0-5-1-10-6-12ZM11 39C8 21 18 7 32 7s24 14 21 32c-1 4-6 4-6 0l-1-9H18l-1 9c0 4-5 4-6 0"/>
+              </g>
+              <g stroke="#182735">
+                <path fill="#2e475c" stroke-width="2" d="M15 22C7 21 3 29 5 37c1 5 6 5 6 1 0-5 1-10 6-12Zm34 0c8-1 12 7 10 15-1 5-6 5-6 1 0-5-1-10-6-12Z"/>
+                <g transform="rotate(-48 26.132 -12.452)">
+                  <g class="key-spin key-main">
+                    <path fill="none" stroke-width="4.6" d="M0 4V-8"/>
+                    <path fill="none" stroke="#d9a441" stroke-width="2.4" d="M0 4V-8"/>
+                    <rect width="5.4" height="2.8" x="-2.7" y="-7.2" fill="#c98a2b" stroke-width="1.4" rx="1"/>
+                    <path fill="#f2b84b" stroke-width="1.5" d="M0-10.5c-2.6-4.5-8.8-5.1-8.8 0s6.2 4.5 8.8 0 8.8-5.1 8.8 0S2.6-6 0-10.5"/>
+                    <circle cx="-5.2" cy="-10.6" r="1.2" fill="#182735" stroke="none"/>
+                    <circle cx="5.2" cy="-10.6" r="1.2" fill="#182735" stroke="none"/>
+                    <circle cx="0" cy="-10.5" r="1.7" fill="#c98a2b" stroke-width="1.3"/>
+                  </g>
+                </g>
+                <path fill="#182735" stroke-width="2" d="M11 39C8 21 18 7 32 7s24 14 21 32c-1 4-6 4-6 0l-1-9H18l-1 9c0 4-5 4-6 0"/>
+                <path fill="none" stroke-width="5" d="m12.6 21.2 2.6 5.6m36.2-5.6-2.6 5.6"/>
+                <path fill="none" stroke="#e85d4a" stroke-width="2.8" d="m12.6 21.2 2.6 5.6m36.2-5.6-2.6 5.6"/>
+                <path fill="#fff3d6" stroke-width="2" d="M15 26c1-14 31-16 34-2l-1 13c-4 13-27 14-32 2Z"/>
+                <path fill="#182735" stroke-width="1.6" d="M15.5 26C15 14 23 10.5 32 10.5S49 14 48.5 26q-2.7-3.4-5.3 0-2.6-3.4-5.3 0-2.6-3.4-5.9 0-3.3-3.4-5.9 0-2.7-3.4-5.3 0-2.6-3.4-5.3 0"/>
+                <path fill="none" stroke="#40576a" stroke-width="1.8" d="M21 15.5c3-2.4 6.5-3.3 10-3.3"/>
+                <g class="eyes-open">
+                  <g class="eye" data-eye><g class="eye-blink"><ellipse cx="24" cy="31.8" rx="2.4" ry="3" fill="#182735" stroke="none"/><circle cx="24.9" cy="30.6" r="0.9" fill="#fff" stroke="none"/></g></g>
+                  <g class="eye" data-eye><g class="eye-blink"><ellipse cx="40" cy="31.8" rx="2.4" ry="3" fill="#182735" stroke="none"/><circle cx="40.9" cy="30.6" r="0.9" fill="#fff" stroke="none"/></g></g>
+                </g>
+                <path class="eyes-happy" fill="none" stroke-width="1.8" d="M20 31c2 3 6 3 8 0m8 0c2 3 6 3 8 0"/>
+                <circle cx="19.6" cy="38" r="2.2" fill="#e85d4a" stroke="none" opacity=".85"/>
+                <circle cx="44.4" cy="38" r="2.2" fill="#e85d4a" stroke="none" opacity=".85"/>
+                <path class="mouth" fill="none" stroke-width="1.6" d="M28 39c2 4 6 4 8 0"/>
+                <g class="gear-spin">
+                  <path fill="#f2b84b" stroke-width="1.2" d="m42.96 4.23.19-1.47h1.7l.19 1.47 1.18.49 1.17-.9 1.19 1.19-.9 1.17.49 1.18 1.47.19v1.7l-1.47.19-.49 1.18.9 1.17-1.19 1.19-1.17-.9-1.18.49-.19 1.47h-1.7l-.19-1.47-1.18-.49-1.17.9-1.19-1.19.9-1.17-.49-1.18-1.47-.19v-1.7l1.47-.19.49-1.18-.9-1.17 1.19-1.19 1.17.9Z"/>
+                  <circle cx="44" cy="8.4" r="2" fill="#e85d4a" stroke-width="1.1"/>
+                </g>
+                <path fill="none" stroke-width="7" d="M4 48c15-7 34 8 56-6.5"/>
+                <path class="cable" fill="none" stroke="#2a9d8f" stroke-width="3.5" d="M4 48c15-7 34 8 56-6.5"/>
+                <path class="cable-pulse" fill="none" stroke="#bff3ea" stroke-width="1.6" pathLength="1" d="M4 48c15-7 34 8 56-6.5"/>
+                <g transform="rotate(-8 330.825 -65.964)">
+                  <rect width="10" height="8" x="-5" y="-4.2" fill="#fff3d6" stroke-width="2" rx="4"/>
+                  <path fill="none" stroke-width="1.3" d="M-1.7.6v2.6M1.7.6v2.6"/>
+                </g>
+                <g transform="rotate(-14 210.584 -183.302)">
+                  <rect width="10" height="8" x="-5" y="-4.2" fill="#fff3d6" stroke-width="2" rx="4"/>
+                  <path fill="none" stroke-width="1.3" d="M-1.7.6v2.6M1.7.6v2.6"/>
+                </g>
+                <path fill="none" stroke="#f2b84b" stroke-width="2.5" d="M23 49v7m21-6v8"/>
+                <circle class="node-l" cx="23" cy="59" r="4" fill="#e85d4a" stroke-width="1.7"/>
+                <circle class="node-r" cx="44" cy="60" r="4" fill="#f2b84b" stroke-width="1.7"/>
+              </g>
+            </g>
+          </svg>
+          <button class="key-hotspot" type="button" data-wind aria-label="Wind the key to run the demo flow"></button>
+        </div>
+        <button class="btn btn-gold wind-btn" type="button" data-wind>Wind the key</button>
+      </div>
+
+      <div class="flowcard" data-flowcard aria-labelledby="flow-title">
+        <div class="fc-head">
+          <span class="fc-dot" aria-hidden="true"></span>
+          <h2 class="fc-title" id="flow-title">Hall light when the door opens</h2>
+          <span class="fc-badge" data-fc-badge>Deployed</span>
+        </div>
+        <ol class="fc-nodes">
+          <li class="fc-node" data-node="trigger">
+            <span class="fc-icon fc-icon-trigger" aria-hidden="true"></span>
+            <span class="fc-text"><b>Front door opens</b><small>Trigger · Zigbee2MQTT contact sensor</small></span>
+            <span class="fc-state" data-state>Idle</span>
+          </li>
+          <li class="fc-node" data-node="light">
+            <span class="fc-icon fc-icon-action" aria-hidden="true"></span>
+            <span class="fc-text"><b>Turn on hall light</b><small>Home Assistant · 3 attempts, 1 s delay, ×2 backoff</small></span>
+            <span class="fc-tries" aria-hidden="true"><i data-try="1"></i><i data-try="2"></i><i data-try="3"></i></span>
+            <span class="fc-state" data-state>Idle</span>
+          </li>
+          <li class="fc-branches">
+            <div class="fc-node fc-ok" data-node="ok">
+              <span class="fc-port">ok</span>
+              <span class="fc-text"><b>Done</b><small>Light is on</small></span>
+            </div>
+            <div class="fc-node fc-err" data-node="err">
+              <span class="fc-port">error</span>
+              <span class="fc-text"><b>Notify my phone</b><small>Notification service</small></span>
+            </div>
+          </li>
+        </ol>
+        <p class="fc-log" data-fc-log>If all three attempts fail, the message leaves by the error branch and a notification goes out.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="features" aria-labelledby="features-title">
+    <div class="section-head reveal">
+      <p class="eyebrow">Features</p>
+      <h2 id="features-title">A tour of what Karakuri does</h2>
+    </div>
+
+    <div class="guide-row guide-row-wide reveal">
+      <div class="guide">
+        <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+        <p class="bubble">Every node has its own form, and the editor checks the graph while you build it.</p>
+      </div>
+      <article class="card card-teal">
+        <h3>Flow editor</h3>
+        <p>Flows live on a node graph canvas built on Svelte Flow. Each node opens a config form, validation runs live, and the run panel lights up node states while a run executes.</p>
+        <div class="editor" data-editor role="img" aria-label="Example flow on the editor canvas. MQTT In sends its message to Time window. Inside the window, the message goes to HA Call Service, which retries up to three times. When it still fails, its Error output sends the message to Send notification.">
+          <div class="ed-inner">
+            <svg class="ed-edges" aria-hidden="true"></svg>
+            <div class="en" data-en="mqtt">
+              <div class="en-head"><svg class="en-ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h7M6.5 5 9.5 8l-3 3M10 2.5h3.5v11H10"/></svg><b>MQTT In</b></div>
+              <div class="en-row"><span></span><span class="en-out"><i class="en-pill">Object</i>Out<span class="en-dot" data-port="mqtt.out"></span></span></div>
+            </div>
+            <div class="en" data-en="tw">
+              <div class="en-head"><svg class="en-ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.8"/><path d="M8 4.8V8l2.2 1.6"/></svg><b>Time window</b></div>
+              <div class="en-row"><span class="en-in"><span class="en-dot en-dot-in" data-port="tw.in"></span>In</span><span class="en-out"><i class="en-pill">Object</i>Inside<span class="en-dot" data-port="tw.inside"></span></span></div>
+              <div class="en-row"><span></span><span class="en-out"><i class="en-pill">Object</i>Outside<span class="en-dot" data-port="tw.outside"></span></span></div>
+              <div class="en-row"><span></span><span class="en-out"><i class="en-pill">Object</i>Error<span class="en-dot en-dot-err" data-port="tw.error"></span></span></div>
+            </div>
+            <div class="en" data-en="ha">
+              <div class="en-head"><svg class="en-ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.8"/><path d="m6.6 5.6 3.6 2.4-3.6 2.4Z"/></svg><b>HA Call Service</b><span class="en-chip" data-en-chip hidden></span></div>
+              <div class="en-row"><span class="en-in"><span class="en-dot en-dot-in" data-port="ha.in"></span>In</span><span class="en-out"><i class="en-pill">Object</i>Out<span class="en-dot" data-port="ha.out"></span></span></div>
+              <div class="en-row"><span></span><span class="en-out"><i class="en-pill">Object</i>Error<span class="en-dot en-dot-err" data-port="ha.error"></span></span></div>
+              <div class="en-foot">3 attempts, 1 s ×2</div>
+            </div>
+            <div class="en" data-en="notify">
+              <div class="en-head"><svg class="en-ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 11.5V7.2a4 4 0 0 1 8 0v4.3l1.2 1.2H2.8ZM6.6 13.8a1.5 1.5 0 0 0 2.8 0"/></svg><b>Send notification</b></div>
+              <div class="en-row"><span class="en-in"><span class="en-dot en-dot-in" data-port="notify.in"></span>In</span><span class="en-out"><i class="en-pill">Object</i>Out<span class="en-dot" data-port="notify.out"></span></span></div>
+              <div class="en-row"><span></span><span class="en-out"><i class="en-pill">Object</i>Error<span class="en-dot en-dot-err" data-port="notify.error"></span></span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="guide-row guide-row-flip reveal">
+      <div class="guide">
+        <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+        <p class="bubble">I wait 1 s, then 2 s, then 4 s. If the light still does not answer, I take the error branch.</p>
+      </div>
+      <article class="card card-pink">
+        <h3>Retries and failure routing</h3>
+        <p>Every node can carry a retry policy. A node that runs out of attempts sends its message out a failure branch, so the run continues. For anything unhandled, a flow can name an error-handler flow.</p>
+        <ul class="policy" aria-label="Example retry policy">
+          <li><span>Max attempts</span><b>4</b></li>
+          <li><span>Delay</span><b>1 s</b></li>
+          <li><span>Backoff</span><b>×2</b></li>
+          <li><span>Delay cap</span><b>30 s</b></li>
+        </ul>
+        <div class="beads" role="img" aria-label="Four attempts, the gap between them doubling: 1 second, 2 seconds, 4 seconds, then the error branch.">
+          <span class="bead bead-x">1</span><span class="gap" style="--g:1"><em>1 s</em></span>
+          <span class="bead bead-x">2</span><span class="gap" style="--g:2"><em>2 s</em></span>
+          <span class="bead bead-x">3</span><span class="gap" style="--g:3"><em>4 s</em></span>
+          <span class="bead bead-x">4</span><span class="gap gap-err"></span>
+          <span class="bead bead-err">error branch</span>
+        </div>
+        <p class="policy-note">Example values. Each node gets its own.</p>
+      </article>
+    </div>
+
+    <div class="guide-row reveal">
+      <div class="guide">
+        <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+        <p class="bubble">Your edits wait in the draft. Deploy makes a numbered version that never changes.</p>
+      </div>
+      <article class="card card-gold">
+        <h3>Drafts and deployed versions</h3>
+        <p>Edits go to a draft. Deploy freezes an immutable numbered version, and triggers arm against it. Restore any earlier version into the draft in one click.</p>
+        <div class="versions" aria-hidden="true">
+          <div class="ver ver-draft"><b>Draft</b><small>3 unsaved edits</small><span class="ver-btn">Deploy</span></div>
+          <div class="ver-stack">
+            <div class="ver"><b>v1</b><small>frozen</small><span class="ver-link">Restore</span></div>
+            <div class="ver"><b>v2</b><small>frozen</small><span class="ver-link">Restore</span></div>
+            <div class="ver ver-live"><b>v3</b><small>triggers armed</small></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="guide-row guide-row-flip reveal">
+      <div class="guide">
+        <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+        <p class="bubble">A few more things I keep in my sleeves.</p>
+      </div>
+      <div class="card-grid">
+        <article class="card card-small">
+          <h3>Test runs</h3>
+          <p>Run the draft from the editor, replay from any node using the last run's outputs, cancel live runs, and re-run the last trigger payload against the deployed graph.</p>
+        </article>
+        <article class="card card-small">
+          <h3>Subflows</h3>
+          <p>Group nodes into a local subgraph, or promote it to a shared library subflow with declared interface ports.</p>
+        </article>
+        <article class="card card-small">
+          <h3>Export and import</h3>
+          <p>Any flow exports as a self-contained JSON document with its shared subflows embedded.</p>
+        </article>
+        <article class="card card-small">
+          <h3>Sandboxed scripts</h3>
+          <p>JavaScript, Python, or Bash with no filesystem, process, or environment access. HTTP goes through the host under a three-level network policy, and scripts call other nodes through generated functions with completion and hover in the editor.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint" id="integrations" aria-labelledby="int-title">
+    <div class="section-head reveal">
+      <p class="eyebrow">Integrations</p>
+      <h2 id="int-title">Talks to the devices you already have</h2>
+      <p class="section-lead">Credentials are encrypted at rest, and every connection shows its live status.</p>
+    </div>
+    <div class="guide guide-center reveal">
+      <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+      <p class="bubble">Zigbee2MQTT devices show up after one discovery step.</p>
+    </div>
+    <ul class="stickers reveal" aria-label="Supported integrations">
+      <li class="st st-teal"><b>Home Assistant</b><small>entities, services, events, areas, Assist conversations</small></li>
+      <li class="st st-pink"><b>openHAB</b><small>items</small></li>
+      <li class="st st-gold"><b>ESPHome</b><small>native API</small></li>
+      <li class="st st-lav"><b>MQTT</b><small>topics and devices</small></li>
+      <li class="st st-teal"><b>Zigbee2MQTT</b><small>discovery in one step</small></li>
+      <li class="st st-pink"><b>Frigate</b><small>cameras, events, reviews</small></li>
+      <li class="st st-gold"><b>Prometheus</b></li>
+      <li class="st st-lav"><b>InfluxDB</b></li>
+      <li class="st st-teal"><b>PostgreSQL</b></li>
+      <li class="st st-pink"><b>Calendars</b><small>ICS, CalDAV, Google</small></li>
+      <li class="st st-gold"><b>Notifications</b><small>notification services</small></li>
+      <li class="st st-lav"><b>AI providers</b></li>
+      <li class="st st-teal"><b>MCP servers</b></li>
+    </ul>
+  </section>
+
+  <section class="section" id="dashboards" aria-labelledby="dash-title">
+    <div class="section-head reveal">
+      <p class="eyebrow">Dashboards</p>
+      <h2 id="dash-title">Panels for the wall tablet, images for everything else</h2>
+    </div>
+    <div class="dash-layout">
+      <div class="tablet reveal" aria-hidden="true">
+        <div class="tablet-screen">
+          <div class="tile tile-clock"><small>Kitchen</small><b data-clock>08:30</b><span>clock</span></div>
+          <div class="tile tile-on"><small>Hall light</small><b>On</b><span>tap to toggle</span></div>
+          <div class="tile tile-media"><small>Living room</small><b>Paused</b><span class="media-bar"><i></i></span></div>
+          <div class="tile tile-chart"><small>Bedroom</small><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0 24C12 22 18 14 30 16S50 8 62 12 84 4 100 6"/></svg><span>chart</span></div>
+          <div class="tile tile-btn"><small>Scene</small><b>Movie</b><span>button</span></div>
+          <div class="tile tile-cam"><small>Driveway</small><span class="cam-dot">camera</span></div>
+        </div>
+      </div>
+      <div class="dash-text">
+        <div class="card reveal">
+          <h3>Grid editor and widgets</h3>
+          <p>Lay out panels from web-component widgets: clocks, media players, cameras, charts, buttons, and entity cards with live state and tap-to-toggle. Share a dashboard with users, groups, or the public.</p>
+          <p class="themes-label">31 bundled CSS themes, including</p>
+          <ul class="themes">
+            <li style="--c1:#f5c2e7;--c2:#1e1e2e">Catppuccin</li>
+            <li style="--c1:#bd93f9;--c2:#282a36">Dracula</li>
+            <li style="--c1:#88c0d0;--c2:#2e3440">Nord</li>
+            <li style="--c1:#fabd2f;--c2:#282828">Gruvbox</li>
+            <li style="--c1:#ebbcba;--c2:#191724">Rosé Pine</li>
+            <li style="--c1:#7aa2f7;--c2:#1a1b26">Tokyo Night</li>
+            <li style="--c1:#a7c080;--c2:#2d353b">Everforest</li>
+            <li style="--c1:#9ed072;--c2:#2c2e34">Sonokai</li>
+            <li style="--c1:#6cb6eb;--c2:#2c2e34">Edge</li>
+          </ul>
+        </div>
+        <div class="guide-row guide-row-tight reveal">
+          <div class="guide">
+            <img class="guide-mascot" src="assets/kuri.svg" alt="" width="80" height="80">
+            <p class="bubble">Some screens only take an image. The built-in renderer makes one from any dashboard.</p>
+          </div>
+          <div class="card card-lav">
+            <h3>Dashboard renders</h3>
+            <p>For devices that only accept images, the built-in renderer turns any dashboard into a picture at the size a URL names: e-ink panels, photo frames, wiki pages, and chat messages. Scheduled renders serve the latest image at a fixed address.</p>
+            <ul class="formats" aria-label="Render formats"><li>PNG</li><li>JPG</li><li>PDF</li><li>GIF</li><li>BMP</li><li>TIFF</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint" id="agents" aria-labelledby="agents-title">
+    <div class="section-head reveal">
+      <p class="eyebrow">Remote machine agents</p>
+      <h2 id="agents-title">Your other computers become nodes</h2>
+      <p class="section-lead">Install the Karakuri agent on a laptop, a NAS, a Windows PC, or a Raspberry Pi and enroll it. That machine's commands, files, services, and desktop show up in the flow editor as nodes that run on it, next to your lights and sensors.</p>
+    </div>
+
+    <div class="agent-map reveal" role="img" aria-label="One Karakuri server with four enrolled machines: a Linux NAS, a Windows PC, a Mac, and a Raspberry Pi. Each one adds its own nodes to the flow editor.">
+      <div class="agent-server">
+        <img src="assets/kuri.svg" alt="" width="64" height="64">
+        <b>Karakuri server</b>
+        <small>agents dial port 9443 over mutual TLS</small>
+      </div>
+      <ul class="machines">
+          <li class="machine">
+            <div class="machine-head"><span class="machine-dot" aria-hidden="true"></span><b>nas</b><small>Linux</small></div>
+            <ul class="machine-nodes"><li>Run command</li><li>Tail log</li><li>Service control</li></ul>
+          </li>
+          <li class="machine">
+            <div class="machine-head"><span class="machine-dot" aria-hidden="true"></span><b>office-pc</b><small>Windows</small></div>
+            <ul class="machine-nodes"><li>Script (PowerShell)</li><li>Screenshot</li><li>Lock screen</li></ul>
+          </li>
+          <li class="machine">
+            <div class="machine-head"><span class="machine-dot" aria-hidden="true"></span><b>studio-mac</b><small>macOS</small></div>
+            <ul class="machine-nodes"><li>Media control</li><li>Notify</li><li>Keyboard</li></ul>
+          </li>
+          <li class="machine">
+            <div class="machine-head"><span class="machine-dot" aria-hidden="true"></span><b>garage-pi</b><small>Raspberry Pi</small></div>
+            <ul class="machine-nodes"><li>Network probe</li><li>HTTP request</li><li>Watch files</li></ul>
+          </li>
+      </ul>
+    </div>
+
+    <div class="guide guide-center reveal">
+      <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+      <p class="bubble">When the front door opens late at night, one flow can turn on the hall light, pause the music on the office PC, and lock its screen.</p>
+    </div>
+
+    <div class="agent-grid">
+      <article class="card card-small reveal">
+        <h3>Commands and scripts</h3>
+        <p>Run a program or a script with whatever interpreter the machine has: Bash, Python, Node, PowerShell, or cmd. Output comes back to the run, and cancelling the run stops the whole process tree.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Files and logs</h3>
+        <p>Read, write, and list files. Watch a directory, or tail a log that keeps its place through rotation and restarts, as triggers that start flows.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Services and processes</h3>
+        <p>Check and control systemd, launchd, and Windows services, and wait to confirm the state they reach. List processes, or start a flow when one starts or stops.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>From that machine's network</h3>
+        <p>Probe a host or a URL and send HTTP requests from where the agent sits, for devices and services only that network can reach.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>The desktop</h3>
+        <p>Keyboard, mouse, screenshots, windows, the clipboard, notifications, dialogs, media players, and the screen lock, in the session the agent runs in.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Apps without an API</h3>
+        <p>Click buttons and menus through the accessibility tree, find a reference image on screen, and wait for a window or control to appear before acting.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Ask a person</h3>
+        <p>Open a page in the machine's browser with instructions and answer buttons, and carry on with the flow once someone picks one.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Enrollment and access</h3>
+        <p>A one-time join token enrolls the agent, mutual TLS carries every call, and revoking an agent cuts it off. Each agent belongs to whoever enrolled it until they share it, and any node type can be turned off per agent.</p>
+      </article>
+    </div>
+
+    <div class="agent-install reveal">
+      <div>
+        <h3>Enroll a machine</h3>
+        <p>Mint a join token under <b>Settings, Agents</b>, then run the command it shows on the machine, as the user the agent should act as. The agent installs itself as that user's service and updates itself after that.</p>
+        <p class="agent-note">Linux, macOS, Windows, and FreeBSD on amd64 and ARM, including 32-bit Raspberry Pi, or as a container. An agent can do what its account can do; it is not sandboxed, so install it for the account whose access you mean to hand over.</p>
+      </div>
+      <div class="code">
+        <pre id="cmd-agent"><code>karakuri-agent enroll --server karakuri.example:9443 \
+  --token &lt;join token&gt; --service</code></pre>
+        <button class="copy" type="button" data-copy="cmd-agent">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="ops" aria-labelledby="ops-title">
+    <div class="section-head reveal">
+      <p class="eyebrow">Operations</p>
+      <h2 id="ops-title">For the person who runs the server</h2>
+    </div>
+    <div class="ops-grid">
+      <article class="card card-small reveal">
+        <h3>MCP server</h3>
+        <p>AI assistants connect over the Model Context Protocol at /mcp to author and deploy flows, read per-node run failures, and manage controls, connections, devices, and dashboards, under the same permissions as the API.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Operations</h3>
+        <p>Prometheus /metrics, /health, structured logging, backups, role-based permissions, API keys, a WebSocket event stream, and an interactive API reference at /api/docs.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Updates itself</h3>
+        <p>A service installs newer releases once a day and rolls back if the new version will not start.</p>
+      </article>
+      <article class="card card-small reveal">
+        <h3>Runs where you are</h3>
+        <p>Linux and macOS on amd64 and arm64, Windows on amd64, and a Docker image for amd64 and arm64. Written in Go with a Svelte frontend.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section-tint" id="install" aria-labelledby="install-title">
+    <div class="section-head reveal">
+      <p class="eyebrow">Get started</p>
+      <h2 id="install-title">Install it in a few minutes</h2>
+    </div>
+    <div class="install reveal">
+      <div class="guide">
+        <img class="guide-mascot" src="assets/kuri.svg" alt="" width="96" height="96">
+        <p class="bubble">Docker Compose is the easy way. Every option ends with the editor at http://localhost:8080.</p>
+      </div>
+      <div class="install-card">
+        <div class="tabs" role="tablist" aria-label="Install method" data-tabs hidden>
+          <button type="button" role="tab" id="tab-docker" aria-controls="panel-docker" aria-selected="true">Docker Compose</button>
+          <button type="button" role="tab" id="tab-postgres" aria-controls="panel-postgres" aria-selected="false" tabindex="-1">Compose with PostgreSQL</button>
+          <button type="button" role="tab" id="tab-linux" aria-controls="panel-linux" aria-selected="false" tabindex="-1">Linux archive</button>
+        </div>
+        <div class="panel" id="panel-docker" role="tabpanel" aria-labelledby="tab-docker">
+          <h3 class="panel-title">Docker Compose</h3>
+          <p class="panel-step"><span class="step-n">1</span><span>Save this as <code>compose.yaml</code> in an empty directory.</span></p>
+          <div class="code">
+            <pre id="cmd-compose"><code>services:
+  karakuri:
+    image: grmrgecko/karakuri:latest
+    container_name: karakuri
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # Web interface and API.
+      - "9443:9443" # Remote agents dial this port.
+    volumes:
+      - karakuri-data:/var/lib/karakuri
+      - karakuri-config:/etc/karakuri
+
+volumes:
+  karakuri-data:
+  karakuri-config:</code></pre>
+            <button class="copy" type="button" data-copy="cmd-compose">Copy</button>
+          </div>
+          <p class="panel-step"><span class="step-n">2</span><span>Start it, then create your admin account.</span></p>
+          <div class="code">
+            <pre id="cmd-docker"><code>docker compose up -d
+docker compose exec karakuri \
+  karakuri user create admin admin@example.com &lt;password&gt; --admin</code></pre>
+            <button class="copy" type="button" data-copy="cmd-docker">Copy</button>
+          </div>
+          <p class="panel-note">The first start writes a configuration with fresh secrets into the config volume. To update, run <code>docker compose pull</code> and then <code>docker compose up -d</code>.</p>
+        </div>
+        <div class="panel" id="panel-postgres" role="tabpanel" aria-labelledby="tab-postgres">
+          <h3 class="panel-title">Compose with PostgreSQL</h3>
+          <p class="panel-step"><span class="step-n">1</span><span>Save this as <code>compose.yaml</code> in an empty directory. It runs PostgreSQL beside Karakuri.</span></p>
+          <div class="code">
+            <pre id="cmd-pg-compose"><code>services:
+  karakuri:
+    image: grmrgecko/karakuri:latest
+    container_name: karakuri
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      KARAKURI_DATABASE_TYPE: postgres
+      KARAKURI_DATABASE_DSN: "host=postgres port=5432 user=karakuri password=${KARAKURI_DB_PASSWORD:?set KARAKURI_DB_PASSWORD in .env} dbname=karakuri sslmode=disable"
+    ports:
+      - "8080:8080" # Web interface and API.
+      - "9443:9443" # Remote agents dial this port.
+    volumes:
+      - karakuri-data:/var/lib/karakuri
+      - karakuri-config:/etc/karakuri
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: karakuri-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: karakuri
+      POSTGRES_PASSWORD: ${KARAKURI_DB_PASSWORD:?set KARAKURI_DB_PASSWORD in .env}
+      POSTGRES_DB: karakuri
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U karakuri -d karakuri"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - karakuri-postgres:/var/lib/postgresql/data
+
+volumes:
+  karakuri-data:
+  karakuri-config:
+  karakuri-postgres:</code></pre>
+            <button class="copy" type="button" data-copy="cmd-pg-compose">Copy</button>
+          </div>
+          <p class="panel-step"><span class="step-n">2</span><span>Write a database password to <code>.env</code>, start it, then create your admin account.</span></p>
+          <div class="code">
+            <pre id="cmd-pg"><code>echo "KARAKURI_DB_PASSWORD=$(openssl rand -hex 24)" &gt; .env
+docker compose up -d
+docker compose exec karakuri \
+  karakuri user create admin admin@example.com &lt;password&gt; --admin</code></pre>
+            <button class="copy" type="button" data-copy="cmd-pg">Copy</button>
+          </div>
+          <p class="panel-note">Keep <code>.env</code> with the volumes: PostgreSQL keeps the password it first started with.</p>
+        </div>
+        <div class="panel" id="panel-linux" role="tabpanel" aria-labelledby="tab-linux">
+          <h3 class="panel-title">Linux archive</h3>
+          <div class="code">
+            <pre id="cmd-linux"><code>tar xzf karakuri-&lt;version&gt;.linux-amd64.tar.gz
+cd karakuri-&lt;version&gt;.linux-amd64
+sudo ./install.sh
+sudo karakuri service install
+sudo karakuri service start</code></pre>
+            <button class="copy" type="button" data-copy="cmd-linux">Copy</button>
+          </div>
+          <p class="panel-note">Archives for every platform are on the <a href="https://github.com/grmrgecko/karakuri/releases">releases page</a>.</p>
+        </div>
+        <p class="install-after">Then open <a href="http://localhost:8080">http://localhost:8080</a>. The <a href="docs.html">documentation</a> covers every install method, MySQL, and configuring the server, and the same guides open in the app under Help.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <svg class="footer-hill" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80V40C240 0 480 0 720 30S1200 70 1440 20V80Z"/></svg>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/kuri.svg" alt="" width="48" height="48">
+      <p><b>Karakuri</b><br>Open source under the MIT license.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="https://github.com/grmrgecko/karakuri">GitHub</a></li>
+      <li><a href="https://github.com/grmrgecko/karakuri/releases">Releases</a></li>
+      <li><a href="docs.html">Documentation</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

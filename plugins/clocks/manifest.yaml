@@ -1,0 +1,28 @@
+# A widget-only plugin: no executable, three clock faces. They share nothing at
+# runtime but are one thing to install, enable, or disable, which is how someone
+# thinks about them. The digital clock is not here — it ships with core, so a
+# fresh install has a working clock without enabling anything.
+name: "clocks"
+version: "0.1.0"
+description: "Analog, binary, and fuzzy clock faces for dashboards."
+author: "James Coleman"
+
+widgets:
+  - name: "Analog Clock"
+    packageName: "analog-clock"
+    tagName: "analog-clock-widget"
+    configTagName: "analog-clock-config"
+    description: "Analog clock with SVG faces and multiple dial styles"
+    tags: ["time", "utility", "clock", "analog"]
+  - name: "Binary Clock"
+    packageName: "binary-clock"
+    tagName: "binary-clock-widget"
+    configTagName: "binary-clock-config"
+    description: "Binary clock with BCD, true binary, and dot matrix layouts"
+    tags: ["time", "utility", "clock", "binary"]
+  - name: "Fuzzy Clock"
+    packageName: "fuzzy-clock"
+    tagName: "fuzzy-clock-widget"
+    configTagName: "fuzzy-clock-config"
+    description: "Fuzzy text-based clock with natural language time display"
+    tags: ["time", "utility", "clock", "fuzzy", "text"]

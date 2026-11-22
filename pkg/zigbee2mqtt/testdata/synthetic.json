@@ -1,0 +1,511 @@
+[
+ {
+  "ieee_address": "0x00124b0000000001",
+  "type": "Coordinator",
+  "network_address": 0,
+  "friendly_name": "Coordinator",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x0017880100000001",
+  "type": "Router",
+  "network_address": 1,
+  "friendly_name": "Kitchen light",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Mains (single phase)",
+  "definition": {
+   "model": "LCT015",
+   "vendor": "Philips",
+   "description": "Hue white and color ambiance E26",
+   "exposes": [
+    {
+     "type": "light",
+     "features": [
+      {
+       "type": "binary",
+       "name": "state",
+       "property": "state",
+       "value_on": "ON",
+       "value_off": "OFF",
+       "value_toggle": "TOGGLE",
+       "access": 7,
+       "label": "State"
+      },
+      {
+       "type": "numeric",
+       "name": "brightness",
+       "property": "brightness",
+       "value_min": 0,
+       "value_max": 254,
+       "access": 7,
+       "label": "Brightness"
+      },
+      {
+       "type": "numeric",
+       "name": "color_temp",
+       "property": "color_temp",
+       "value_min": 153,
+       "value_max": 500,
+       "unit": "mired",
+       "access": 7,
+       "label": "Color temp"
+      },
+      {
+       "type": "composite",
+       "name": "color_xy",
+       "property": "color",
+       "access": 7,
+       "label": "Color (X/Y)",
+       "features": [
+        {
+         "type": "numeric",
+         "name": "x",
+         "property": "x",
+         "access": 7
+        },
+        {
+         "type": "numeric",
+         "name": "y",
+         "property": "y",
+         "access": 7
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "enum",
+     "name": "effect",
+     "property": "effect",
+     "values": [
+      "blink",
+      "breathe",
+      "okay"
+     ],
+     "access": 2,
+     "label": "Effect"
+    },
+    {
+     "type": "enum",
+     "name": "power_on_behavior",
+     "property": "power_on_behavior",
+     "values": [
+      "off",
+      "on",
+      "toggle",
+      "previous"
+     ],
+     "access": 7,
+     "category": "config"
+    },
+    {
+     "type": "numeric",
+     "name": "linkquality",
+     "property": "linkquality",
+     "access": 1,
+     "unit": "lqi",
+     "value_min": 0,
+     "value_max": 255,
+     "category": "diagnostic",
+     "label": "Linkquality"
+    }
+   ],
+   "supports_ota": false,
+   "options": []
+  },
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x00158d0000000002",
+  "type": "EndDevice",
+  "network_address": 1,
+  "friendly_name": "Living room blind",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Battery",
+  "definition": {
+   "model": "E1757",
+   "vendor": "IKEA",
+   "description": "FYRTUR roller blind",
+   "exposes": [
+    {
+     "type": "cover",
+     "features": [
+      {
+       "type": "enum",
+       "name": "state",
+       "property": "state",
+       "values": [
+        "OPEN",
+        "CLOSE",
+        "STOP"
+       ],
+       "access": 3,
+       "label": "State"
+      },
+      {
+       "type": "numeric",
+       "name": "position",
+       "property": "position",
+       "value_min": 0,
+       "value_max": 100,
+       "unit": "%",
+       "access": 7,
+       "label": "Position"
+      },
+      {
+       "type": "numeric",
+       "name": "tilt",
+       "property": "tilt",
+       "value_min": 0,
+       "value_max": 100,
+       "unit": "%",
+       "access": 7,
+       "label": "Tilt"
+      }
+     ]
+    },
+    {
+     "type": "numeric",
+     "name": "battery",
+     "property": "battery",
+     "access": 1,
+     "unit": "%",
+     "value_min": 0,
+     "value_max": 100,
+     "category": "diagnostic",
+     "label": "Battery"
+    },
+    {
+     "type": "numeric",
+     "name": "linkquality",
+     "property": "linkquality",
+     "access": 1,
+     "unit": "lqi",
+     "value_min": 0,
+     "value_max": 255,
+     "category": "diagnostic",
+     "label": "Linkquality"
+    }
+   ],
+   "supports_ota": false,
+   "options": []
+  },
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x000d6f0000000003",
+  "type": "EndDevice",
+  "network_address": 1,
+  "friendly_name": "Front door lock",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Battery",
+  "definition": {
+   "model": "YRD256",
+   "vendor": "Yale",
+   "description": "Assure lock",
+   "exposes": [
+    {
+     "type": "lock",
+     "features": [
+      {
+       "type": "binary",
+       "name": "state",
+       "property": "state",
+       "value_on": "LOCK",
+       "value_off": "UNLOCK",
+       "access": 7,
+       "label": "State"
+      },
+      {
+       "type": "enum",
+       "name": "lock_state",
+       "property": "lock_state",
+       "values": [
+        "not_fully_locked",
+        "locked",
+        "unlocked"
+       ],
+       "access": 1,
+       "label": "Lock state"
+      }
+     ]
+    },
+    {
+     "type": "numeric",
+     "name": "battery",
+     "property": "battery",
+     "access": 1,
+     "unit": "%",
+     "value_min": 0,
+     "value_max": 100,
+     "category": "diagnostic",
+     "label": "Battery"
+    },
+    {
+     "type": "numeric",
+     "name": "linkquality",
+     "property": "linkquality",
+     "access": 1,
+     "unit": "lqi",
+     "value_min": 0,
+     "value_max": 255,
+     "category": "diagnostic",
+     "label": "Linkquality"
+    }
+   ],
+   "supports_ota": false,
+   "options": []
+  },
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x0015bc0000000004",
+  "type": "Router",
+  "network_address": 1,
+  "friendly_name": "Bedroom fan",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Mains (single phase)",
+  "definition": {
+   "model": "99432",
+   "vendor": "Hampton Bay",
+   "description": "Fan and light controller",
+   "exposes": [
+    {
+     "type": "fan",
+     "features": [
+      {
+       "type": "binary",
+       "name": "state",
+       "property": "fan_state",
+       "value_on": "ON",
+       "value_off": "OFF",
+       "access": 7,
+       "label": "State"
+      },
+      {
+       "type": "enum",
+       "name": "mode",
+       "property": "fan_mode",
+       "values": [
+        "off",
+        "low",
+        "medium",
+        "high",
+        "on",
+        "auto",
+        "smart"
+       ],
+       "access": 7,
+       "label": "Mode"
+      }
+     ]
+    },
+    {
+     "type": "numeric",
+     "name": "linkquality",
+     "property": "linkquality",
+     "access": 1,
+     "unit": "lqi",
+     "value_min": 0,
+     "value_max": 255,
+     "category": "diagnostic",
+     "label": "Linkquality"
+    }
+   ],
+   "supports_ota": false,
+   "options": []
+  },
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x0015bc0000000005",
+  "type": "Router",
+  "network_address": 1,
+  "friendly_name": "Hall thermostat",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Mains (single phase)",
+  "definition": {
+   "model": "SLR2",
+   "vendor": "Hive",
+   "description": "Heating thermostat",
+   "exposes": [
+    {
+     "type": "climate",
+     "features": [
+      {
+       "type": "numeric",
+       "name": "occupied_heating_setpoint",
+       "property": "occupied_heating_setpoint",
+       "value_min": 5,
+       "value_max": 30,
+       "value_step": 0.5,
+       "unit": "°C",
+       "access": 7,
+       "label": "Occupied heating setpoint"
+      },
+      {
+       "type": "numeric",
+       "name": "local_temperature",
+       "property": "local_temperature",
+       "unit": "°C",
+       "access": 5,
+       "label": "Local temperature"
+      },
+      {
+       "type": "enum",
+       "name": "system_mode",
+       "property": "system_mode",
+       "values": [
+        "off",
+        "heat",
+        "auto"
+       ],
+       "access": 7,
+       "label": "System mode"
+      },
+      {
+       "type": "enum",
+       "name": "running_state",
+       "property": "running_state",
+       "values": [
+        "idle",
+        "heat"
+       ],
+       "access": 5,
+       "label": "Running state"
+      }
+     ]
+    },
+    {
+     "type": "numeric",
+     "name": "linkquality",
+     "property": "linkquality",
+     "access": 1,
+     "unit": "lqi",
+     "value_min": 0,
+     "value_max": 255,
+     "category": "diagnostic",
+     "label": "Linkquality"
+    }
+   ],
+   "supports_ota": false,
+   "options": []
+  },
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x00158d0000000006",
+  "type": "EndDevice",
+  "network_address": 1,
+  "friendly_name": "Back door",
+  "supported": true,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Battery",
+  "definition": {
+   "model": "MCCGQ11LM",
+   "vendor": "Aqara",
+   "description": "Door and window sensor",
+   "exposes": [
+    {
+     "type": "binary",
+     "name": "contact",
+     "property": "contact",
+     "value_on": false,
+     "value_off": true,
+     "access": 1,
+     "label": "Contact",
+     "description": "Indicates if the contact is closed (= true) or open (= false)"
+    },
+    {
+     "type": "numeric",
+     "name": "battery",
+     "property": "battery",
+     "access": 1,
+     "unit": "%",
+     "value_min": 0,
+     "value_max": 100,
+     "category": "diagnostic",
+     "label": "Battery"
+    },
+    {
+     "type": "numeric",
+     "name": "device_temperature",
+     "property": "device_temperature",
+     "unit": "°C",
+     "access": 1,
+     "category": "diagnostic"
+    },
+    {
+     "type": "numeric",
+     "name": "linkquality",
+     "property": "linkquality",
+     "access": 1,
+     "unit": "lqi",
+     "value_min": 0,
+     "value_max": 255,
+     "category": "diagnostic",
+     "label": "Linkquality"
+    }
+   ],
+   "supports_ota": false,
+   "options": []
+  },
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x00158d0000000007",
+  "type": "EndDevice",
+  "network_address": 7,
+  "friendly_name": "Mystery sensor",
+  "supported": false,
+  "disabled": false,
+  "interview_completed": true,
+  "interviewing": false,
+  "interview_state": "SUCCESSFUL",
+  "power_source": "Battery",
+  "definition": null,
+  "endpoints": {}
+ },
+ {
+  "ieee_address": "0x00158d0000000008",
+  "type": "EndDevice",
+  "network_address": 8,
+  "friendly_name": "0x00158d0000000008",
+  "supported": false,
+  "disabled": false,
+  "interview_completed": false,
+  "interviewing": true,
+  "interview_state": "IN_PROGRESS",
+  "power_source": "Battery",
+  "definition": null,
+  "endpoints": {}
+ }
+]

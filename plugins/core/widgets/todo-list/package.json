@@ -1,0 +1,17 @@
+{
+  "name": "@karakuri/todo-list-widget",
+  "version": "1.0.0",
+  "description": "A Home Assistant to-do list with items to tick off and add",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "svelte": "^5.25.3",
+    "typescript": "^5.7.0",
+    "vite": "^6.3.5"
+  }
+}

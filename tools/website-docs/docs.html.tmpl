@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karakuri documentation</title>
+<meta name="description" content="Guides for installing, setting up, and using Karakuri: flows, dashboards, devices and integrations, remote machine agents, and administration.">
+<link rel="icon" href="assets/kuri.svg" type="image/svg+xml">
+<script>
+  // Apply the stored theme before CSS paints; the main page uses the same key.
+  (function () {
+    var d = document.documentElement;
+    d.classList.add("js");
+    try {
+      var t = localStorage.getItem("karakuri-theme-kawaii");
+      if (t === "light" || t === "dark") d.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body class="docs-page">
+<a class="skip" href="#main">Skip to content</a>
+<div class="sky" aria-hidden="true"><span class="stars stars-a"></span><span class="stars stars-b"></span></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/kuri.svg" alt="" width="40" height="40">
+      <span>Karakuri</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#agents">Agents</a></li>
+        <li><a href="index.html#install">Install</a></li>
+        <li><a href="docs.html" aria-current="page">Docs</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="theme-seg" role="group" aria-label="Color theme">
+        <button type="button" data-theme-choice="auto" aria-pressed="true">Auto</button>
+        <button type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+      </div>
+      <a class="btn btn-small btn-navy" href="https://github.com/grmrgecko/karakuri">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar" aria-label="Guides">
+    <details class="docs-menu" open data-menu>
+    <summary>Guides</summary>
+    <a class="docs-side-item docs-index-link" href="#" data-guide-link="">All guides</a>
+    {{- range .Groups}}
+    <div class="docs-side-group">{{.Name}}</div>
+    {{- range .Guides}}
+    <a class="docs-side-item" href="#{{.ID}}" data-guide-link="{{.ID}}">{{.Title}}</a>
+    {{- if .Sections}}
+    <nav class="docs-sections" data-sections="{{.ID}}" aria-label="Sections of {{.Title}}">
+      {{- range .Sections}}
+      <a href="#{{.Anchor}}">{{.Label}}</a>
+      {{- end}}
+    </nav>
+    {{- end}}
+    {{- end}}
+    {{- end}}
+    </details>
+  </aside>
+
+  <main id="main" class="docs-main">
+    <section class="docs-index" data-index>
+      <h1>Documentation</h1>
+      <p class="docs-lead">Guides for installing, setting up, and using Karakuri. The same guides ship inside the server and open under <b>Help</b> in the web interface.</p>
+      {{- range .Groups}}
+      <h2 class="docs-group-heading">{{.Name}}</h2>
+      <div class="docs-cards">
+        {{- range .Guides}}
+        <a class="docs-card" href="#{{.ID}}">
+          <span class="docs-card-title">{{.Title}}</span>
+          <span class="docs-card-summary">{{.Summary}}</span>
+        </a>
+        {{- end}}
+      </div>
+      {{- end}}
+    </section>
+
+    {{- range .Groups}}
+    {{- range .Guides}}
+    <article class="docs-body" id="{{.ID}}" data-guide="{{.ID}}">
+      {{.HTML}}
+    </article>
+    {{- end}}
+    {{- end}}
+  </main>
+</div>
+
+<footer class="site-footer">
+  <svg class="footer-hill" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80V40C240 0 480 0 720 30S1200 70 1440 20V80Z"/></svg>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/kuri.svg" alt="" width="48" height="48">
+      <p><b>Karakuri</b><br>Open source under the MIT license.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="https://github.com/grmrgecko/karakuri">GitHub</a></li>
+      <li><a href="https://github.com/grmrgecko/karakuri/releases">Releases</a></li>
+      <li><a href="docs.html">Documentation</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

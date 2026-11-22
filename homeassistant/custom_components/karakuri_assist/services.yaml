@@ -1,0 +1,61 @@
+respond:
+  name: Respond
+  description: Returns a Karakuri flow result to a pending Assist turn.
+  fields:
+    request_id:
+      name: Request ID
+      required: true
+      selector:
+        text:
+    agent_id:
+      name: Agent ID
+      required: true
+      selector:
+        text:
+    response:
+      name: Response
+      required: true
+      selector:
+        text:
+          multiline: true
+    stream:
+      name: Stream
+      description: Marks this response as a partial update and keeps the Assist turn open.
+      selector:
+        boolean:
+    tool_call_id:
+      name: Tool call ID
+      selector:
+        text:
+    tool_name:
+      name: Tool name
+      selector:
+        text:
+    tool_label:
+      name: Tool label
+      selector:
+        text:
+    tool_status:
+      name: Tool status
+      selector:
+        select:
+          options:
+            - running
+            - completed
+    conversation_id:
+      name: Conversation ID
+      selector:
+        text:
+    session_id:
+      name: Session ID
+      selector:
+        text:
+    transcript:
+      name: Transcript
+      description: Full AI transcript envelope, including unmodified provider responses.
+      selector:
+        object:
+    continue_conversation:
+      name: Continue conversation
+      selector:
+        boolean:

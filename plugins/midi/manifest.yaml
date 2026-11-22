@@ -1,0 +1,10 @@
+name: "midi"
+version: "0.1.0"
+description: "MIDI devices on this machine: a connection kind over local ports with a receive trigger and a send node."
+author: "James Coleman"
+
+# The gRPC executable: the connection kind, its port driver, and the flow nodes.
+entryPoint: "midi"
+
+# Most installs have no MIDI hardware; enable it from /settings/plugins.
+defaultDisabled: true

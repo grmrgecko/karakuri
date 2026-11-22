@@ -1,0 +1,76 @@
+name: "weather"
+version: "0.1.0"
+description: "Weather forecasts for dashboards and flows, via OpenWeatherMap or Open-Meteo."
+author: "James Coleman"
+
+# The gRPC executable: flow nodes, an HTTP API, settings, and reactive polling.
+entryPoint: "weather"
+
+# The dashboard widget reading that API.
+widgets:
+  - name: "Weather"
+    packageName: "weather"
+    tagName: "weather-widget"
+    configTagName: "weather-config"
+    tags: ["weather", "forecast", "utility"]
+    defaultProvider: "openmeteo"
+    defaultConfig:
+      provider: openmeteo
+      units: metric
+      language: en
+      iconTheme: static
+      layout: current
+      backgroundStyle: none
+      aqiScale: us
+    configSchema:
+      type: object
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        locationName:
+          type: string
+        provider:
+          type: string
+          enum: [openmeteo, openweathermap]
+          description: Open-Meteo needs no API key. OpenWeatherMap requires a configured key and forecast access.
+        units:
+          type: string
+          enum: [metric, imperial]
+        language:
+          type: string
+        iconTheme:
+          type: string
+          enum: [static, animated]
+        layout:
+          type: string
+          enum: [current, hourly, daily, full, precipitation, astro, wind, textonly, tilegrid, alertbanner, thermometer, air-quality]
+        backgroundStyle:
+          type: string
+          enum: [none, gradient, image]
+          description: Use image for a built-in weather photo background; a separate image widget is unnecessary.
+        aqiScale:
+          type: string
+          enum: [us, european]
+          description: The index the air-quality layout leads with. Air quality and pollen come from Open-Meteo only; pollen is published for Europe only.
+    # A forecast is not one of the host's binding kinds: it comes from this
+    # plugin's own topic and its own API, so the plugin declares them. Only the
+    # forecast route is named. The geocoding routes beside it belong to the
+    # config panel, whose author holds api:weather:read. Station readings
+    # arrive through the Weather Override flow node, not this API.
+    #
+    # The topic stays a namespace rather than one location: the widget rounds
+    # the coordinates into it, and a pattern the host expanded itself would be
+    # a second copy of that rounding. A viewer of a dashboard holding this
+    # widget can therefore read forecasts for other locations. That is the
+    # boundary this plugin chooses for public weather data.
+    scope:
+      topics:
+        - "weather:forecast:*"
+      api:
+        - "GET /*/forecast/*"

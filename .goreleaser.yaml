@@ -1,0 +1,253 @@
+# GoReleaser configuration for karakuri.
+#
+# A release has three kinds of artifact. The server archive is a self-contained
+# install: the karakuri binary, which embeds the web interface, with plugins/
+# and themes/ beside it, exactly the layout internal/resources searches, plus
+# the install.sh that moves it into place. The agent and automation archives each carry one static
+# binary. A remote agent needs no server files, and karakuri-auto is useful
+# without either process.
+#
+# This file is the source rather than the config goreleaser reads. `make
+# release-config` expands the two @plugin-...@ markers below into one entry per
+# plugin and writes build/goreleaser.yaml, which is what a release actually
+# runs; running goreleaser on this file directly builds no plugins at all.
+# `make release-config-agent` cuts the regions between the @server-only-begin@
+# and @server-only-end@ markers instead and writes build/goreleaser.agent.yaml,
+# the config `make snapshot-agent` runs: the same pipeline with only the agent
+# build and archive left in it. The markers exist because archives cannot be
+# skipped from the command line the way builds can.
+#
+# The web assets are not built here either. `make release-assets` runs the npm
+# builds on the host, since the cross image carries Go toolchains and no node:
+# the frontend lands in pkg/http/dist, where the server build embeds it, and
+# the widget packages and themes are staged under build/release/.
+#
+# The version comes from the git tag on a release and from KARAKURI_VERSION —
+# the VERSION file, passed in by the Makefile — on a snapshot, so the number a
+# binary reports is the one the repository declares either way. KARAKURI_COMMIT
+# is passed the same way because goreleaser reports the commit as "none" until
+# the repository has a remote, and a build that cannot say which commit it came
+# from is what the stamp exists to prevent.
+version: 2
+
+project_name: karakuri
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  # The agent links no cgo and no database, so GOOS and GOARCH are the whole
+  # story: it is built for every platform an agent might run on rather than the
+  # server's shorter list. It comes first and defines the ldflags anchor,
+  # because `make release-config-agent` cuts the @server-only@ regions below to
+  # write an agent-only config, and the parts that remain have to be
+  # self-contained.
+  - id: karakuri-agent
+    main: ./cmd/karakuri-agent
+    binary: karakuri-agent
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags: &ldflags
+      - -s -w
+      - -X github.com/grmrgecko/karakuri/internal/version.Version={{ .Version }}
+      - -X github.com/grmrgecko/karakuri/internal/version.Commit={{ envOrDefault "KARAKURI_COMMIT" .ShortCommit }}
+      - -X github.com/grmrgecko/karakuri/internal/version.Date={{ .Date }}
+    env:
+      - CGO_ENABLED=0
+    # docker/macos-sign.sh signs and notarizes each darwin binary with the
+    # credentials in .signing/, and leaves it as built when there are none.
+    # Every build takes this anchor, the generated plugin builds included.
+    hooks: &macos_sign
+      post:
+        - cmd: 'docker/macos-sign.sh "{{ .Path }}" {{ .Os }}'
+          output: true
+    goos: &portable_goos
+      - linux
+      - darwin
+      - windows
+      - freebsd
+    goarch: &portable_goarch
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "7"
+    ignore: &portable_ignore
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
+      - goos: freebsd
+        goarch: arm
+
+  # @server-only-begin@
+  # The automation command follows the agent's platform matrix. It lives in
+  # the root module so the project release owns the executable while the
+  # nested automation module remains an embeddable library.
+  - id: karakuri-auto
+    main: ./cmd/karakuri-auto
+    binary: karakuri-auto
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags: *ldflags
+    env:
+      - CGO_ENABLED=0
+    hooks: *macos_sign
+    goos: *portable_goos
+    goarch: *portable_goarch
+    goarm:
+      - "7"
+    ignore: *portable_ignore
+
+  # The server links no cgo either: SQLite ships as a WebAssembly module run
+  # in-process under wazero, so GOOS and GOARCH are the whole story here too.
+  # The cross image still runs the release for the one plugin that does link C
+  # (the MIDI plugin's rtmidi backend, C++ over ALSA).
+  - id: karakuri
+    main: ./cmd/karakuri
+    binary: karakuri
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags: *ldflags
+    env:
+      - CGO_ENABLED=0
+    hooks: *macos_sign
+    goos: &server_goos
+      - linux
+      - darwin
+      - windows
+    goarch: &server_goarch
+      - amd64
+      - arm64
+    ignore: &server_ignore
+      # Nothing runs the server on Windows on ARM.
+      - goos: windows
+        goarch: arm64
+
+  # @plugin-builds@
+  #
+  # One build per plugins/<name>/main.go, spliced in here by `make
+  # release-config`, which is why adding a plugin is adding a directory rather
+  # than editing this file. Each is built into plugins/<name>/<name> so it
+  # lands beside its manifest in the archive, where the host's plugin scan
+  # finds it, and each takes the server's own platform list: a plugin built for
+  # a target with no server has nothing to load it. The one that needs cgo —
+  # the MIDI plugin's rtmidi backend is C++ over ALSA — is built for Linux
+  # alone, which is the platform the cross image can be given headers for, and
+  # is the reason the release still runs inside the cross image at all.
+  # @server-only-end@
+
+archives:
+  # @server-only-begin@
+  # The server archive carries the plugin executables built for the same target
+  # alongside the staged assets. The binary count differs across platforms
+  # because the MIDI plugin is Linux-only, which is what
+  # allow_different_binary_count permits.
+  - id: server
+    ids:
+      - karakuri
+      # @plugin-ids@
+    allow_different_binary_count: true
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    # Kept compatible with the results of uname.
+    name_template: "{{ .ProjectName }}-{{ .Version }}.{{ .Os }}-{{ .Arch }}"
+    wrap_in_directory: true
+    files:
+      - README.md
+      - LICENSE.txt
+      - src: homeassistant/custom_components/karakuri_assist/*.py
+        dst: homeassistant/custom_components/karakuri_assist
+      - src: homeassistant/custom_components/karakuri_assist/*.json
+        dst: homeassistant/custom_components/karakuri_assist
+      - src: homeassistant/custom_components/karakuri_assist/*.yaml
+        dst: homeassistant/custom_components/karakuri_assist
+      - src: homeassistant/custom_components/karakuri_assist/translations/*.json
+        dst: homeassistant/custom_components/karakuri_assist/translations
+      - src: homeassistant/README.md
+        dst: homeassistant/README.md
+      # The installer is what turns the unpacked directory into an install, and
+      # it is the same script `make install` runs. It is a shell script, so the
+      # Windows archive gets a glob that deliberately matches nothing rather
+      # than a file nothing there can run.
+      - src: 'install.sh{{ if eq .Os "windows" }}-unavailable{{ end }}*'
+        dst: .
+      - src: build/release/**/*
+        dst: .
+
+  # The Home Assistant integration as its own download, laid out to unzip into
+  # Home Assistant's config directory. meta builds it once from files alone, with
+  # no binaries. The files are listed by type so a local __pycache__ or the
+  # tests never ship; `make release-check` keeps manifest.json's version equal
+  # to the release.
+  - id: homeassistant
+    meta: true
+    formats: [zip]
+    name_template: "karakuri-assist-{{ .Version }}"
+    files:
+      - src: homeassistant/custom_components/karakuri_assist/*.py
+        dst: custom_components/karakuri_assist
+      - src: homeassistant/custom_components/karakuri_assist/*.json
+        dst: custom_components/karakuri_assist
+      - src: homeassistant/custom_components/karakuri_assist/*.yaml
+        dst: custom_components/karakuri_assist
+      - src: homeassistant/custom_components/karakuri_assist/translations/*.json
+        dst: custom_components/karakuri_assist/translations
+      - src: homeassistant/README.md
+        dst: README.md
+      - LICENSE.txt
+
+  - id: automation
+    ids:
+      - karakuri-auto
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "karakuri-auto-{{ .Version }}.{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    wrap_in_directory: true
+    files:
+      - src: automation/README.md
+        dst: README.md
+      - LICENSE.txt
+  # @server-only-end@
+
+  - id: agent
+    ids:
+      - karakuri-agent
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}-agent-{{ .Version }}.{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    wrap_in_directory: true
+    # No installer here: `karakuri-agent enroll --service` installs and starts
+    # the agent in the same command, and it needs a join token no script can
+    # guess.
+    files:
+      - README.md
+      - LICENSE.txt
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  # KARAKURI_VERSION is the VERSION file, passed in by the Makefile. The
+  # fallback only applies to a bare goreleaser run, where the number is not
+  # claiming to be anything.
+  version_template: '{{ envOrDefault "KARAKURI_VERSION" "0.0.0" }}-snapshot-{{ envOrDefault "KARAKURI_COMMIT" .ShortCommit }}'
+
+changelog:
+  use: git
+  sort: asc
+
+release:
+  prerelease: auto
+
+report_sizes: true

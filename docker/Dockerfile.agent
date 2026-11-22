@@ -1,0 +1,52 @@
+# Agent image, built from a checkout: `make docker-agent`, or
+# `docker build -f docker/Dockerfile.agent .` from a clone. Dockerfile.agent-release
+# builds the same image from the release archives instead.
+#
+# The agent links no cgo, so the build stage runs on the build host's own
+# architecture and cross-compiles for the target, and an arm64 image costs no
+# emulated compile. The stage is Debian rather than Alpine because the Linux
+# binary still names a dynamic loader (purego's dlopen support), and the one it
+# names is the build image's libc's: glibc's, to match the runtime stage.
+FROM --platform=$BUILDPLATFORM golang:1.26-trixie AS builder
+
+WORKDIR /build
+
+# Cache Go module downloads (changes infrequently).
+COPY go.mod go.sum ./
+COPY automation/go.mod automation/go.sum automation/
+RUN go mod download
+
+COPY . .
+# Unset, the build stamps whatever the VERSION file says. The arg is in the
+# environment even when empty, and make's `VERSION ?=` treats an empty
+# environment value as set, so the fallback to the file is done here.
+ARG VERSION=
+ARG TARGETARCH
+RUN make agent GOOS=linux GOARCH=$TARGETARCH AGENT_BIN=build/karakuri-agent VERSION="${VERSION:-$(cat VERSION)}"
+
+# Runtime stage. Debian rather than a bare static image because command and
+# script nodes run in it: they get bash, coreutils, and apt for an image that
+# extends this one with the tools its flows call.
+FROM debian:trixie-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/build/karakuri-agent /usr/local/bin/karakuri-agent
+COPY docker/agent.yaml /etc/karakuri/agent.yaml
+COPY docker/agent-entrypoint.sh /usr/local/bin/karakuri-agent-entrypoint
+
+# Nodes run with the agent's permissions, so the default account is an
+# unprivileged one; `docker run --user root` is the choice to make otherwise.
+RUN mkdir -p /var/lib/karakuri && \
+    useradd --system --home-dir /var/lib/karakuri --shell /usr/sbin/nologin karakuri && \
+    chown -R karakuri:karakuri /var/lib/karakuri
+
+USER karakuri
+WORKDIR /var/lib/karakuri
+
+VOLUME ["/var/lib/karakuri"]
+
+ENTRYPOINT ["/usr/local/bin/karakuri-agent-entrypoint"]
+CMD ["run"]

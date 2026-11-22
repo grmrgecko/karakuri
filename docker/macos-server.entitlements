@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Entitlements for the macOS server binary, which docker/macos-sign.sh signs
+  with the hardened runtime. SQLite and the Python runtime run as WebAssembly
+  under wazero, which compiles modules to native code in anonymous memory and
+  then marks it executable. The hardened runtime refuses that without this
+  entitlement.
+-->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+	<true/>
+</dict>
+</plist>

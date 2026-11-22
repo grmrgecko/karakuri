@@ -1,0 +1,233 @@
+:root {
+  /* Gruvbox Dark - Base Colors */
+  --theme-rosewater: #fe8019;
+  --theme-flamingo: #fe8019;
+  --theme-pink: #d3869b;
+  --theme-mauve: #d3869b;
+  --theme-red: #fb4934;
+  --theme-maroon: #cc241d;
+  --theme-peach: #fe8019;
+  --theme-yellow: #fabd2f;
+  --theme-green: #b8bb26;
+  --theme-teal: #8ec07c;
+  --theme-sky: #8ec07c;
+  --theme-sapphire: #458588;
+  --theme-blue: #83a598;
+  --theme-lavender: #83a598;
+  --theme-text: #ebdbb2;
+  --theme-subtext1: #d5c4a1;
+  --theme-subtext0: #bdae93;
+  --theme-overlay2: #a89984;
+  --theme-overlay1: #928374;
+  --theme-overlay0: #7c6f64;
+  --theme-surface2: #665c54;
+  --theme-surface1: #504945;
+  --theme-surface0: #3c3836;
+  --theme-base: #282828;
+  --theme-mantle: #1d2021;
+  --theme-crust: #181b1c;
+
+  /* Semantic Aliases */
+  --theme-bg: var(--theme-base);
+  --theme-bg-secondary: var(--theme-mantle);
+  --theme-bg-tertiary: var(--theme-crust);
+  --theme-text-muted: var(--theme-subtext0);
+  --theme-border: var(--theme-surface0);
+  --theme-accent: var(--theme-blue);
+  --theme-success: var(--theme-green);
+  --theme-warning: var(--theme-yellow);
+  --theme-error: var(--theme-red);
+  --theme-info: var(--theme-sapphire);
+
+  /* Component Tokens */
+  --theme-card-bg: var(--theme-surface0);
+  --theme-card-border: var(--theme-surface1);
+  --theme-input-bg: var(--theme-surface0);
+  --theme-input-border: var(--theme-surface1);
+  --theme-nav-bg: var(--theme-mantle);
+  --theme-sidebar-bg: var(--theme-crust);
+  --theme-widget-bg: var(--theme-surface0);
+  --theme-widget-border: var(--theme-surface1);
+
+  /* Typography */
+  --theme-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --theme-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing and Radius */
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+  --theme-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --theme-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --theme-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+
+  /* Interactive Tokens */
+  --theme-link-color: var(--theme-accent);
+  --theme-link-hover-color: var(--theme-lavender);
+  --theme-focus-ring-color: color-mix(in srgb, var(--theme-accent) 40%, transparent);
+  --theme-hover-bg: var(--theme-surface1);
+
+  /* Button Tokens */
+  --theme-btn-primary-bg: var(--theme-accent);
+  --theme-btn-primary-text: var(--theme-base);
+  --theme-btn-secondary-bg: var(--theme-surface1);
+  --theme-btn-secondary-text: var(--theme-text);
+
+  /* State Subtle Backgrounds */
+  --theme-success-bg-subtle: color-mix(in srgb, var(--theme-green) 15%, var(--theme-base));
+  --theme-warning-bg-subtle: color-mix(in srgb, var(--theme-yellow) 15%, var(--theme-base));
+  --theme-error-bg-subtle: color-mix(in srgb, var(--theme-red) 15%, var(--theme-base));
+  --theme-info-bg-subtle: color-mix(in srgb, var(--theme-sapphire) 15%, var(--theme-base));
+
+  /* Table Tokens */
+  --theme-table-bg: var(--theme-base);
+  --theme-table-border: var(--theme-surface1);
+  --theme-table-header-bg: var(--theme-surface0);
+  --theme-table-stripe-bg: color-mix(in srgb, var(--theme-overlay0) 4%, var(--theme-base));
+  --theme-table-hover-bg: color-mix(in srgb, var(--theme-overlay0) 8%, var(--theme-base));
+
+  /* Dropdown Tokens */
+  --theme-dropdown-bg: var(--theme-card-bg);
+  --theme-dropdown-border: var(--theme-card-border);
+  --theme-dropdown-hover-bg: var(--theme-hover-bg);
+
+  /* Modal Tokens */
+  --theme-modal-bg: var(--theme-card-bg);
+  --theme-modal-border: var(--theme-card-border);
+  --theme-backdrop-bg: rgba(0, 0, 0, 0.5);
+
+  /* Tooltip Tokens */
+  --theme-tooltip-bg: var(--theme-overlay2);
+  --theme-tooltip-text: var(--theme-base);
+
+  /* Code Tokens */
+  --theme-code-bg: var(--theme-surface0);
+  --theme-code-text: var(--theme-pink);
+
+  /* Emphasis and Utility */
+  --theme-emphasis-color: var(--theme-text);
+  --theme-border-translucent: color-mix(in srgb, var(--theme-border) 60%, transparent);
+
+  /* State Subtle Borders */
+  --theme-success-border-subtle: color-mix(in srgb, var(--theme-green) 25%, var(--theme-base));
+  --theme-warning-border-subtle: color-mix(in srgb, var(--theme-yellow) 25%, var(--theme-base));
+  --theme-error-border-subtle: color-mix(in srgb, var(--theme-red) 25%, var(--theme-base));
+  --theme-info-border-subtle: color-mix(in srgb, var(--theme-sapphire) 25%, var(--theme-base));
+
+  /* State Text Emphasis */
+  --theme-success-text: var(--theme-green);
+  --theme-warning-text: var(--theme-yellow);
+  --theme-error-text: var(--theme-red);
+  --theme-info-text: var(--theme-sapphire);
+
+  /* Accent/Primary Variants */
+  --theme-accent-bg-subtle: color-mix(in srgb, var(--theme-accent) 15%, var(--theme-base));
+  --theme-accent-border-subtle: color-mix(in srgb, var(--theme-accent) 25%, var(--theme-base));
+  --theme-accent-text: var(--theme-accent);
+
+  /* Additional Button Variants */
+  --theme-btn-danger-bg: var(--theme-red);
+  --theme-btn-danger-text: var(--theme-base);
+  --theme-btn-success-bg: var(--theme-green);
+  --theme-btn-success-text: var(--theme-base);
+  --theme-btn-warning-bg: var(--theme-yellow);
+  --theme-btn-warning-text: color-mix(in srgb, var(--theme-yellow) 25%, black);
+  --theme-btn-info-bg: var(--theme-sapphire);
+  --theme-btn-info-text: var(--theme-base);
+
+  /* Badge Tokens */
+  --theme-badge-bg: var(--theme-accent);
+  --theme-badge-text: var(--theme-base);
+
+  /* Breadcrumb Tokens */
+  --theme-breadcrumb-color: var(--theme-text-muted);
+  --theme-breadcrumb-active-color: var(--theme-text);
+  --theme-breadcrumb-divider-color: var(--theme-overlay1);
+
+  /* List Group Tokens */
+  --theme-list-group-bg: var(--theme-card-bg);
+  --theme-list-group-border: var(--theme-card-border);
+  --theme-list-group-hover-bg: var(--theme-hover-bg);
+  --theme-list-group-active-bg: var(--theme-accent);
+  --theme-list-group-active-text: var(--theme-base);
+
+  /* Pagination Tokens */
+  --theme-pagination-bg: var(--theme-card-bg);
+  --theme-pagination-border: var(--theme-card-border);
+  --theme-pagination-active-bg: var(--theme-accent);
+  --theme-pagination-active-text: var(--theme-base);
+  --theme-pagination-disabled-color: var(--theme-overlay0);
+
+  /* Progress Bar Tokens */
+  --theme-progress-bg: var(--theme-surface0);
+  --theme-progress-bar-bg: var(--theme-accent);
+
+  /* Toast Tokens */
+  --theme-toast-bg: var(--theme-card-bg);
+  --theme-toast-border: var(--theme-card-border);
+  --theme-toast-header-bg: color-mix(in srgb, var(--theme-surface0) 80%, var(--theme-card-bg));
+
+  /* Popover Tokens */
+  --theme-popover-bg: var(--theme-card-bg);
+  --theme-popover-border: var(--theme-card-border);
+  --theme-popover-header-bg: color-mix(in srgb, var(--theme-surface0) 50%, var(--theme-card-bg));
+
+  /* Offcanvas Tokens */
+  --theme-offcanvas-bg: var(--theme-card-bg);
+  --theme-offcanvas-border: var(--theme-card-border);
+
+  /* Accordion Tokens */
+  --theme-accordion-bg: var(--theme-card-bg);
+  --theme-accordion-border: var(--theme-card-border);
+  --theme-accordion-active-bg: var(--theme-accent-bg-subtle);
+  --theme-accordion-active-text: var(--theme-accent);
+  --theme-accordion-btn-bg: var(--theme-card-bg);
+
+  /* Nav Tab/Pill Tokens */
+  --theme-nav-tab-border: var(--theme-border);
+  --theme-nav-tab-active-bg: var(--theme-card-bg);
+  --theme-nav-tab-active-text: var(--theme-accent);
+  --theme-nav-tab-hover-bg: var(--theme-hover-bg);
+  --theme-nav-pill-active-bg: var(--theme-accent);
+  --theme-nav-pill-active-text: var(--theme-base);
+
+  /* Form Enhancement Tokens */
+  --theme-input-focus-border: var(--theme-accent);
+  --theme-input-placeholder-color: var(--theme-overlay1);
+  --theme-input-disabled-bg: var(--theme-surface0);
+  --theme-form-valid-color: var(--theme-green);
+  --theme-form-valid-border: var(--theme-green);
+  --theme-form-invalid-color: var(--theme-red);
+  --theme-form-invalid-border: var(--theme-red);
+  --theme-form-check-active-bg: var(--theme-accent);
+
+  /* Heading and Selection */
+  --theme-heading-color: var(--theme-text);
+  --theme-highlight-bg: color-mix(in srgb, var(--theme-yellow) 30%, var(--theme-base));
+  --theme-highlight-text: var(--theme-text);
+
+  /* Spinner Tokens */
+  --theme-spinner-color: var(--theme-accent);
+
+  /* Close Button */
+  --theme-close-btn-color: var(--theme-text-muted);
+
+  /* Placeholder Loading */
+  --theme-placeholder-bg: var(--theme-surface1);
+
+  /* Focus Ring Enhancement */
+  --theme-focus-ring-width: 0.25rem;
+
+  /* Disabled States */
+  --theme-disabled-opacity: 0.65;
+
+  /* Carousel Tokens */
+  --theme-carousel-indicator-bg: var(--theme-overlay1);
+  --theme-carousel-indicator-active-bg: var(--theme-text);
+  --theme-carousel-caption-color: var(--theme-text);
+
+  /* Scrollbar Tokens */
+  --theme-scrollbar-track: var(--theme-surface0);
+  --theme-scrollbar-thumb: var(--theme-overlay0);
+  --theme-scrollbar-thumb-hover: var(--theme-overlay1);
+}

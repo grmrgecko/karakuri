@@ -1,0 +1,29 @@
+name: "stock"
+version: "0.1.0"
+description: "Stock quotes for dashboards and flows, via Yahoo Finance, Alpha Vantage, or Finnhub."
+author: "James Coleman"
+
+# The gRPC executable: flow nodes, an HTTP API, settings, and reactive polling.
+entryPoint: "stock"
+
+# The dashboard widget reading that API.
+widgets:
+  - name: "Stock"
+    packageName: "stock"
+    tagName: "stock-widget"
+    configTagName: "stock-config"
+    tags: ["stock", "finance", "market"]
+    defaultProvider: "yahoo"
+    # Quotes come from this plugin's own topic and API rather than a host
+    # binding, so the plugin declares them. The routes are the quote, chart,
+    # and trending reads the widget makes. A quote path has the same shape as
+    # the config panel's symbol search, so the quote pattern also reaches
+    # search. The topic is a namespace: a viewer of a dashboard holding this
+    # widget can read any symbol's quote, which is the boundary this plugin
+    # chooses for public market data.
+    scope:
+      topics:
+        - "market:stock:*"
+      api:
+        - "GET /*/*"
+        - "GET /*/*/ohlc"

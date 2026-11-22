@@ -1,0 +1,60 @@
+# Runtime image assembled from a release archive, built by `make docker-release`.
+#
+# The root Dockerfile builds the same image from a checkout, which is what a
+# clone needs and what `make docker` runs. This one compiles nothing: the
+# context is an unpacked release archive, so the image ships the exact binary,
+# plugins, and themes the archives do rather than a rebuild that
+# merely ought to match. The server is a static pure-Go binary and would run on
+# anything; the base is Debian trixie for the MIDI plugin, whose C++ is built
+# on the cross image's Ubuntu 24.04 and picks up symbols that need glibc 2.38
+# (Debian 13, Ubuntu 24.04) — an older base runs the server and fails that one
+# plugin at startup.
+FROM debian:trixie-slim
+
+# Dashboard renders drive a headless Chromium; the fonts are what keep a
+# rendered dashboard from being a grid of boxes. It is the largest thing in the
+# image by far, so a deployment that never renders can leave it out with
+# --build-arg DASHBOARD_RENDERS=0.
+# libasound2 is what the MIDI plugin links; it is a few hundred kilobytes and
+# the alternative is a plugin that cannot start in a container.
+ARG DASHBOARD_RENDERS=1
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates tzdata libasound2t64 && \
+    if [ "${DASHBOARD_RENDERS}" = "1" ]; then \
+        apt-get install -y --no-install-recommends \
+            chromium fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji; \
+    fi && \
+    rm -rf /var/lib/apt/lists/*
+
+# The context holds one unpacked archive per architecture, and TARGETARCH is
+# what picks this image's. BuildKit sets it to the host's architecture for a
+# plain build and to each platform in turn under buildx, so one Dockerfile
+# covers both. The tree itself is the one install.sh places, so the layout the
+# server searches is the layout it was released with.
+ARG TARGETARCH
+COPY ${TARGETARCH}/karakuri /usr/local/bin/karakuri
+COPY ${TARGETARCH}/plugins/ /usr/share/karakuri/plugins/
+COPY ${TARGETARCH}/themes/ /usr/share/karakuri/themes/
+COPY ${TARGETARCH}/runtimes/ /usr/share/karakuri/runtimes/
+COPY entrypoint.sh /usr/local/bin/karakuri-entrypoint
+
+RUN mkdir -p /etc/karakuri /var/lib/karakuri && \
+    useradd --system --home-dir /var/lib/karakuri --shell /usr/sbin/nologin karakuri && \
+    chown -R karakuri:karakuri /etc/karakuri /var/lib/karakuri
+
+USER karakuri
+
+# A container is replaced by pulling a newer image, never updated in place.
+ENV KARAKURI_UPDATE_ENABLED=false
+
+# The healthcheck asks the server on this host for its health route. The long
+# start period covers migrations and the database copy a new release takes
+# before it serves.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5m --retries=3 \
+    CMD ["karakuri", "healthcheck"]
+
+VOLUME ["/etc/karakuri", "/var/lib/karakuri"]
+EXPOSE 8080 9443
+
+ENTRYPOINT ["/usr/local/bin/karakuri-entrypoint"]
+CMD ["serve"]

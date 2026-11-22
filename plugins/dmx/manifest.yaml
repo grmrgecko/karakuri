@@ -1,0 +1,10 @@
+name: "dmx"
+version: "0.1.0"
+description: "DMX lighting over sACN (E1.31) and Art-Net: a connection kind with receive trigger and channel-set nodes."
+author: "James Coleman"
+
+# The gRPC executable: the connection kind, its UDP drivers, and the flow nodes.
+entryPoint: "dmx"
+
+# Most installs have no DMX rig; enable it from /settings/plugins.
+defaultDisabled: true

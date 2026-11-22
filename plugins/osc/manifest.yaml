@@ -1,0 +1,10 @@
+name: "osc"
+version: "0.1.0"
+description: "Open Sound Control: an OSC connection kind with a receive trigger and a send node."
+author: "James Coleman"
+
+# The gRPC executable: the connection kind, its UDP driver, and the flow nodes.
+entryPoint: "osc"
+
+# Most installs have nothing speaking OSC; enable it from /settings/plugins.
+defaultDisabled: true

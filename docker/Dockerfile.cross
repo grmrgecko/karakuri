@@ -1,0 +1,37 @@
+# Cross-compilation image for `make snapshot` and `make release`.
+#
+# goreleaser-cross already carries the Linux, macOS (osxcross), and Windows
+# (mingw) toolchains the cgo builds need. What it does not carry is ALSA, which
+# the MIDI plugin's rtmidi backend links against, so the headers are added here
+# for both Linux architectures the release builds. Everything else in the
+# release links either no cgo or nothing beyond libc. rcodesign, added last,
+# signs and notarizes the macOS binaries, and zip packs a binary for the notary
+# service, which takes no bare executable.
+ARG GO_CROSS_VERSION=v1.26.5
+FROM ghcr.io/goreleaser/goreleaser-cross:${GO_CROSS_VERSION}
+
+RUN dpkg --add-architecture arm64 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libasound2-dev \
+        libasound2-dev:arm64 \
+        zip && \
+    rm -rf /var/lib/apt/lists/*
+
+# rcodesign signs and notarizes the macOS binaries from Linux, where Apple's
+# codesign and notarytool do not exist; docker/macos-sign.sh runs it after each
+# darwin build. The release archive is pinned by version and checksum.
+ARG RCODESIGN_VERSION=0.29.0
+RUN arch=$(uname -m); \
+    case "$arch" in \
+        aarch64) sum=4af92c87ddf52f5f2d1258a3b4e56c7dcb8f1b2468df744976c5f139e031961f ;; \
+        x86_64) sum=dbe85cedd8ee4217b64e9a0e4c2aef92ab8bcaaa41f20bde99781ff02e600002 ;; \
+        *) echo "no rcodesign checksum for $arch" >&2; exit 1 ;; \
+    esac; \
+    name="apple-codesign-${RCODESIGN_VERSION}-${arch}-unknown-linux-musl"; \
+    curl --proto '=https' --tlsv1.2 -sSfL -o /tmp/rcodesign.tar.gz \
+        "https://github.com/indygreg/apple-platform-rs/releases/download/apple-codesign%2F${RCODESIGN_VERSION}/${name}.tar.gz"; \
+    echo "$sum  /tmp/rcodesign.tar.gz" | sha256sum -c -; \
+    tar -xzf /tmp/rcodesign.tar.gz -C /tmp; \
+    install -m 0755 "/tmp/${name}/rcodesign" /usr/local/bin/rcodesign; \
+    rm -rf /tmp/rcodesign.tar.gz "/tmp/${name}"

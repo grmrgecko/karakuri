@@ -1,0 +1,52 @@
+# Karakuri server with a PostgreSQL database. Save it as compose.yaml in an
+# empty directory, put a password in a .env file beside it, then start it and
+# create the first admin account:
+#
+#   echo "KARAKURI_DB_PASSWORD=$(openssl rand -hex 24)" > .env
+#   docker compose up -d
+#   docker compose exec karakuri karakuri user create admin admin@example.com <password> --admin
+#
+# The configuration, with fresh secrets, is written into the config volume on
+# first start; the database settings below override its SQLite default. Keep
+# every volume: the database and the encryption key cannot be regenerated.
+services:
+  karakuri:
+    image: grmrgecko/karakuri:latest
+    container_name: karakuri
+    restart: unless-stopped
+    # Shutdown drains HTTP, stops plugins, and suspends runs, which can take
+    # longer than Docker's default ten seconds before it kills the process.
+    stop_grace_period: 45s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      KARAKURI_DATABASE_TYPE: postgres
+      KARAKURI_DATABASE_DSN: "host=postgres port=5432 user=karakuri password=${KARAKURI_DB_PASSWORD:?set KARAKURI_DB_PASSWORD in .env} dbname=karakuri sslmode=disable"
+    ports:
+      - "8080:8080" # Web interface and API.
+      - "9443:9443" # Remote agents dial this port.
+    volumes:
+      - karakuri-data:/var/lib/karakuri
+      - karakuri-config:/etc/karakuri
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: karakuri-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: karakuri
+      POSTGRES_PASSWORD: ${KARAKURI_DB_PASSWORD:?set KARAKURI_DB_PASSWORD in .env}
+      POSTGRES_DB: karakuri
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U karakuri -d karakuri"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - karakuri-postgres:/var/lib/postgresql/data
+
+volumes:
+  karakuri-data:
+  karakuri-config:
+  karakuri-postgres:

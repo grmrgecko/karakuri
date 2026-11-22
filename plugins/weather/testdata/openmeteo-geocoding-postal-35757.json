@@ -1,0 +1,27 @@
+{
+  "results": [
+    {
+      "id": 4074267,
+      "name": "Madison",
+      "latitude": 34.69926,
+      "longitude": -86.74833,
+      "elevation": 215.0,
+      "feature_code": "PPL",
+      "country_code": "US",
+      "admin1_id": 4829764,
+      "admin2_id": 4074277,
+      "timezone": "America/Chicago",
+      "population": 46962,
+      "postcodes": [
+        "35756",
+        "35757",
+        "35758"
+      ],
+      "country_id": 6252001,
+      "country": "United States",
+      "admin1": "Alabama",
+      "admin2": "Madison"
+    }
+  ],
+  "generationtime_ms": 1.1478662
+}

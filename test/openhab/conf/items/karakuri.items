@@ -1,0 +1,18 @@
+Group gGround "Ground floor" ["GroundFloor"]
+Group gLiving "Living room" (gGround) ["LivingRoom"]
+Group gKitchen "Kitchen" (gGround) ["Kitchen"]
+Group gLamp "Lamp" (gLiving) ["Lightbulb"]
+Group:Switch:OR(ON,OFF) gLights "All lights"
+
+Dimmer   LivingDimmer   "Living dimmer [%d %%]"      (gLamp, gLights) ["Control", "Light"]
+Color    LivingColor    "Living colour"              (gLiving) ["Control", "Light"]
+Switch   KitchenSwitch  "Kitchen switch"             (gKitchen, gLights) ["Switch", "Power"]
+Rollershutter KitchenBlind "Kitchen blind"           (gKitchen) ["Control", "Level"]
+Number:Temperature KitchenTemp "Kitchen temperature [%.1f %unit%]" (gKitchen) ["Measurement", "Temperature"]
+Number   Volume         "Volume [%d]"                (gLiving) { stateDescription=""[min=0, max=50, step=5] }
+String   Mode           "Mode"                       (gLiving) { stateDescription=""[options="day=Day,night=Night"] }
+Contact  FrontDoor      "Front door"                 (gGround) ["OpenState"]
+DateTime LastSeen       "Last seen"
+Player   Speaker        "Speaker"                    (gLiving)
+Location Phone          "Phone location"
+Switch   NoLocation     "Loose switch"

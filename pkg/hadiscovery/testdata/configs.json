@@ -1,0 +1,43 @@
+{
+  "_provenance": "Synthetic discovery configs shaped as Tasmota 14, ESPHome 2025 (MQTT), Shelly Gen2 scripts, and Zigbee2MQTT 2.x publish them, with abbreviated keys as each tool emits.",
+  "tasmota_switch": {
+    "topic": "homeassistant/switch/A1B2C3_RL_1/config",
+    "payload": {"name": null, "stat_t": "tele/plug1/STATE", "avty_t": "tele/plug1/LWT", "pl_avail": "Online", "pl_not_avail": "Offline", "cmd_t": "cmnd/plug1/POWER", "val_tpl": "{{value_json.POWER}}", "pl_off": "OFF", "pl_on": "ON", "uniq_id": "A1B2C3_RL_1", "dev": {"ids": ["A1B2C3"], "name": "Plug1", "mdl": "Sonoff Basic", "mf": "Tasmota"}}
+  },
+  "tasmota_power": {
+    "topic": "homeassistant/sensor/A1B2C3_ENERGY_Power/config",
+    "payload": {"name": "ENERGY Power", "stat_t": "tele/plug1/SENSOR", "avty_t": "tele/plug1/LWT", "pl_avail": "Online", "pl_not_avail": "Offline", "uniq_id": "A1B2C3_ENERGY_Power", "dev": {"ids": ["A1B2C3"]}, "unit_of_meas": "W", "dev_cla": "power", "stat_cla": "measurement", "val_tpl": "{{value_json['ENERGY']['Power']}}"}
+  },
+  "esphome_light": {
+    "topic": "homeassistant/light/desk/desk_lamp/config",
+    "payload": {"name": "Desk lamp", "schema": "json", "brightness": true, "sup_clrm": ["rgb"], "stat_t": "desk/light/desk_lamp/state", "cmd_t": "desk/light/desk_lamp/command", "avty_t": "desk/status", "uniq_id": "ESPlightdesk_lamp", "dev": {"ids": "a0b1c2d3e4f5", "name": "desk", "mf": "Espressif"}}
+  },
+  "esphome_cover": {
+    "topic": "homeassistant/cover/garage/door/config",
+    "payload": {"name": "Door", "dev_cla": "garage", "~": "garage/cover/door", "stat_t": "~/state", "cmd_t": "~/command", "pos_t": "~/position/state", "set_pos_t": "~/position/command", "avty_t": "garage/status", "uniq_id": "ESPcoverdoor", "dev": {"ids": "aabbccddeeff", "name": "garage"}}
+  },
+  "shelly_binary": {
+    "topic": "homeassistant/binary_sensor/shellyplus1-abc_input/config",
+    "payload": {"name": "Input", "uniq_id": "shellyplus1-abc_input", "stat_t": "shellyplus1-abc/status/input:0", "val_tpl": "{{ 'ON' if value_json.state else 'OFF' }}", "dev_cla": "door", "dev": {"ids": ["shellyplus1-abc"], "name": "Garage input"}}
+  },
+  "climate": {
+    "topic": "homeassistant/climate/hvac1/config",
+    "payload": {"name": "Thermostat", "uniq_id": "hvac1", "mode_cmd_t": "hvac1/mode/set", "mode_stat_t": "hvac1/mode", "modes": ["off", "heat", "cool"], "temp_cmd_t": "hvac1/target/set", "temp_stat_t": "hvac1/target", "curr_temp_t": "hvac1/current", "temp_unit": "C", "temp_step": 0.5, "min_temp": 10, "max_temp": 30}
+  },
+  "number_template": {
+    "topic": "homeassistant/number/brightness/config",
+    "payload": {"name": "Level", "uniq_id": "lvl1", "cmd_t": "lvl1/set", "cmd_tpl": "{\"level\": {{ value | int }}}", "stat_t": "lvl1/state", "val_tpl": "{{ value_json.level | float(0) / 10 }}", "min": 0, "max": 10, "step": 0.5}
+  },
+  "device_based": {
+    "topic": "homeassistant/device/node1/config",
+    "payload": {"dev": {"ids": "node1", "name": "Node"}, "o": {"name": "custom"}, "cmps": {"temp": {"p": "sensor", "unit_of_meas": "°C", "val_tpl": "{{ value_json.t }}", "uniq_id": "node1_t"}, "btn": {"p": "button", "cmd_t": "node1/reboot", "pl_prs": "REBOOT", "name": "Reboot", "uniq_id": "node1_btn"}}, "stat_t": "node1/state"}
+  },
+  "z2m_light": {
+    "topic": "homeassistant/light/0x00158d0001/light/config",
+    "payload": {"schema": "json", "stat_t": "zigbee2mqtt/Kitchen", "cmd_t": "zigbee2mqtt/Kitchen/set", "uniq_id": "0x00158d0001_light_zigbee2mqtt", "dev": {"ids": ["zigbee2mqtt_0x00158d0001"], "name": "Kitchen"}}
+  },
+  "blocks": {
+    "topic": "homeassistant/sensor/bad/config",
+    "payload": {"name": "Bad", "stat_t": "bad/state", "val_tpl": "{% if value == '1' %}on{% endif %}", "uniq_id": "bad1"}
+  }
+}

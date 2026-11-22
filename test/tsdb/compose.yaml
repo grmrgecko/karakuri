@@ -1,0 +1,73 @@
+# Databases the time-series connections are tested against. Start with
+# `make tsdb-up`, stop and discard their data with `make tsdb-down`. Ports sit
+# in the 19xxx range so they do not collide with services on the host.
+name: karakuri-tsdb
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-remote-write-receiver
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports: ["19090:9090"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:9090/-/ready"]
+      interval: 2s
+      retries: 30
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    command: ["-retentionPeriod=1y", "-search.latencyOffset=0s"]
+    ports: ["19428:8428"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8428/health"]
+      interval: 2s
+      retries: 30
+
+  influxdb1:
+    image: influxdb:1.8
+    environment:
+      INFLUXDB_DB: karakuri
+      INFLUXDB_HTTP_AUTH_ENABLED: "true"
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: karakuri-test
+    ports: ["19086:8086"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8086/ping"]
+      interval: 2s
+      retries: 30
+
+  influxdb2:
+    image: influxdb:2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: karakuri-test
+      DOCKER_INFLUXDB_INIT_ORG: karakuri
+      DOCKER_INFLUXDB_INIT_BUCKET: karakuri
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: karakuri-test-token
+    ports: ["19087:8086"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8086/health"]
+      interval: 2s
+      retries: 30
+
+  influxdb3:
+    image: influxdb:3-core
+    command: ["influxdb3", "serve", "--node-id", "node0", "--object-store", "memory", "--without-auth"]
+    ports: ["19181:8181"]
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: karakuri
+      POSTGRES_PASSWORD: karakuri-test
+      POSTGRES_DB: karakuri
+    ports: ["19432:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "karakuri"]
+      interval: 2s
+      retries: 30

@@ -1,0 +1,17 @@
+{
+  "name": "@karakuri/entities-card-widget",
+  "version": "1.0.0",
+  "description": "Card of rows bound to controls, Home Assistant entities, MQTT topics, and flow triggers",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "svelte": "^5.25.3",
+    "typescript": "^5.7.0",
+    "vite": "^6.3.5"
+  }
+}

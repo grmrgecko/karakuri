@@ -1,0 +1,5 @@
+# Keep local agent state out of commits; share the installed skills.
+*
+!.gitignore
+!skills/
+!skills/**

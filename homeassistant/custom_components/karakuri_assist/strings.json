@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Karakuri Assist",
+        "description": "In Karakuri, deploy an HA Assist flow using the connection for this Home Assistant instance, then enter its Agent ID.",
+        "data": {
+          "name": "Agent name",
+          "agent_id": "Agent ID",
+          "timeout": "Response timeout"
+        },
+        "data_description": {
+          "agent_id": "Route name configured on the HA Assist node.",
+          "timeout": "Seconds to wait for the Karakuri flow."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Karakuri Assist",
+        "data": {
+          "name": "Agent name",
+          "agent_id": "Agent ID",
+          "timeout": "Response timeout"
+        }
+      }
+    },
+    "error": {
+      "required": "This field is required."
+    },
+    "abort": {
+      "already_configured": "This Karakuri Assist agent is already configured.",
+      "reconfigure_successful": "Karakuri Assist was reconfigured."
+    }
+  }
+}

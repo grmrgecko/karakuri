@@ -1,0 +1,17 @@
+# Agent configuration baked into the karakuri-agent image. Mount a file over
+# /etc/karakuri/agent.yaml to change it; the keys are the agent's flags with
+# dashes written as underscores.
+
+# A container is replaced by pulling a newer image, never updated in place.
+auto_update: false
+
+# dir is the identity directory, on the image's /var/lib/karakuri volume so the
+# enrolled identity outlives the container.
+dir: /var/lib/karakuri/agent
+
+# disable withholds node types from the server. A container has no desktop
+# session, so the desktop and GUI nodes report that when they run; list them
+# here to keep them out of the palette instead.
+# disable:
+#   - screenshot
+#   - power

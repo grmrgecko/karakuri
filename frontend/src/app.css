@@ -1,0 +1,179 @@
+@import 'line-awesome/dist/line-awesome/css/line-awesome.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.prompt-markdown { overflow-wrap: anywhere; line-height: 1.65; }
+.prompt-markdown img { max-width: 100%; height: auto; border-radius: 6px; }
+.prompt-markdown h1, .prompt-markdown h2, .prompt-markdown h3 { font-weight: 600; margin: 1em 0 0.5em; }
+.prompt-markdown h1 { font-size: 1.6em; }
+.prompt-markdown h2 { font-size: 1.3em; }
+.prompt-markdown p, .prompt-markdown ul, .prompt-markdown ol, .prompt-markdown pre, .prompt-markdown blockquote { margin: 0.75em 0; }
+.prompt-markdown ul { list-style: disc; padding-left: 1.5em; }
+.prompt-markdown ol { list-style: decimal; padding-left: 1.5em; }
+.prompt-markdown a { color: var(--theme-accent); text-decoration: underline; }
+.prompt-markdown pre { overflow: auto; background: var(--theme-crust); padding: 1em; border-radius: 6px; }
+.prompt-markdown blockquote { border-left: 3px solid var(--theme-surface2); padding-left: 1em; }
+.prompt-markdown table { border-collapse: collapse; max-width: 100%; }
+.prompt-markdown th, .prompt-markdown td { border: 1px solid var(--theme-surface2); padding: 0.4em 0.7em; }
+
+/*
+ * Default (dark) theme. Colors are exposed as CSS variables so runtime
+ * theming can be layered on later without touching tailwind.config.js.
+ */
+:root {
+  --theme-base: #1e1e2e;
+  --theme-mantle: #181825;
+  --theme-crust: #11111b;
+  --theme-text: #cdd6f4;
+  --theme-text-muted: #a6adc8;
+  --theme-surface0: #313244;
+  --theme-surface1: #45475a;
+  --theme-surface2: #585b70;
+  --theme-overlay0: #6c7086;
+  --theme-accent: #89b4fa;
+  --theme-success: #a6e3a1;
+  --theme-warning: #f9e2af;
+  --theme-error: #f38ba8;
+  --theme-info: #94e2d5;
+  --theme-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --theme-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+}
+
+:root {
+  font-family: var(--theme-font-family, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--theme-text, #cdd6f4);
+  background-color: var(--theme-base, #1e1e2e);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+ * The shell is pinned to the viewport rather than grown by content: the flow
+ * editor sizes its canvas and side panels from a definite height, so the
+ * panels scroll internally instead of stretching the page. Scrolling for
+ * ordinary pages happens on <main>.
+ */
+body {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--theme-accent, #89b4fa);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+.btn {
+  @apply px-4 py-2 font-medium transition-colors duration-150;
+  border-radius: 8px;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.btn-primary {
+  background-color: var(--theme-accent, #89b4fa);
+  color: var(--theme-base, #1e1e2e);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background-color: var(--theme-surface0, #313244);
+  color: var(--theme-text, #cdd6f4);
+}
+
+.btn-secondary:hover {
+  background-color: var(--theme-surface1, #45475a);
+}
+
+.btn-danger {
+  background-color: var(--theme-error, #f38ba8);
+  color: var(--theme-base, #1e1e2e);
+}
+
+.btn-danger:hover {
+  filter: brightness(1.1);
+}
+
+.card {
+  background-color: var(--theme-card-bg, var(--theme-surface0, #313244));
+  border: 1px solid var(--theme-card-border, var(--theme-surface1, #45475a));
+  border-radius: var(--theme-radius-md, 8px);
+  box-shadow: var(--theme-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.card-accent {
+  background-color: var(--theme-card-bg, var(--theme-surface0, #313244));
+  border: 1px solid var(--theme-card-border, var(--theme-surface1, #45475a));
+  border-left: 3px solid var(--theme-accent, #89b4fa);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: var(--theme-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.input {
+  @apply px-3 py-2 rounded-md border outline-none transition-colors duration-150;
+  background-color: var(--theme-input-bg, var(--theme-surface0, #313244));
+  border-color: var(--theme-input-border, var(--theme-surface1, #45475a));
+}
+
+.input:focus {
+  border-color: var(--theme-accent, #89b4fa);
+  box-shadow: 0 0 0 2px rgba(137, 180, 250, 0.2);
+}
+
+/* Placements hidden by the presence action (lib/presence.ts). Hidden keeps
+   the cell's space; collapsed gives it up so a region stack closes up. The
+   rules are important because a cell's own scoped display and visibility
+   outrank a bare attribute selector. */
+[data-presence='hidden'] {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+[data-presence='collapsed'] {
+  display: none !important;
+}

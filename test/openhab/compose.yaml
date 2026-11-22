@@ -1,0 +1,29 @@
+# The openHAB the openHAB connection is tested against. Start with
+# `make openhab-up`, stop and discard its data with `make openhab-down`. The
+# port sits in the 19xxx range so it does not collide with services on the
+# host.
+name: karakuri-openhab
+
+services:
+  openhab:
+    image: openhab/openhab:5.2.3
+    # The entrypoint takes ownership of everything under /openhab, the
+    # mounted items included, so it runs as the user who owns the checkout.
+    environment:
+      CRYPTO_POLICY: unlimited
+      TZ: Etc/UTC
+      USER_ID: ${OPENHAB_UID:-1000}
+      GROUP_ID: ${OPENHAB_GID:-1000}
+    volumes:
+      - ./conf/items:/openhab/conf/items
+      - openhab-conf:/openhab/conf
+      - openhab-userdata:/openhab/userdata
+    ports: ["127.0.0.1:19080:8080"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/rest/"]
+      interval: 3s
+      retries: 100
+
+volumes:
+  openhab-conf:
+  openhab-userdata:

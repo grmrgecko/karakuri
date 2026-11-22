@@ -1,0 +1,107 @@
+/* Documentation page: the site's header and footer around a guide list and
+   one guide at a time. Colors come from the tokens in style.css. */
+
+.docs-layout {
+  display: grid; gap: 2rem; max-width: 1240px; margin: 0 auto; padding: 1.5rem 16px 3rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .docs-layout { grid-template-columns: 270px minmax(0, 1fr); padding-inline: 24px; }
+}
+
+/* Guide list. */
+.docs-sidebar { min-width: 0; }
+@media (min-width: 900px) {
+  .docs-sidebar { position: sticky; top: 6rem; align-self: start; max-height: calc(100dvh - 7rem); overflow-y: auto; }
+}
+.docs-menu {
+  background: var(--surface); border: 2px solid var(--line); border-radius: var(--r-md);
+  padding: 0.6rem; box-shadow: var(--shadow-soft);
+}
+.docs-menu summary {
+  cursor: pointer; font-family: var(--font-display); font-weight: 800; padding: 0.3rem 0.5rem;
+}
+@media (min-width: 900px) {
+  .docs-menu summary { display: none; }
+}
+.docs-side-group {
+  margin: 1rem 0.5rem 0.3rem; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+.docs-side-item {
+  display: block; padding: 0.35rem 0.7rem; border-radius: 10px; color: var(--ink);
+  text-decoration: none; font-weight: 700; font-size: 0.92rem;
+}
+.docs-side-item:hover { background: var(--pink-2); color: var(--pink-ink); }
+.docs-side-item.active { background: var(--teal-soft); color: var(--teal-ink); }
+.docs-index-link { margin-top: 0.3rem; }
+.docs-sections {
+  display: flex; flex-direction: column; margin: 0.15rem 0 0.5rem 1rem; padding-left: 0.5rem;
+  border-left: 2px solid var(--line);
+}
+.docs-sections a {
+  padding: 0.18rem 0.5rem; font-size: 0.84rem; color: var(--ink-soft); text-decoration: none; border-radius: 8px;
+}
+.docs-sections a:hover, .docs-sections a.current { color: var(--teal-ink); }
+.docs-routed [hidden] { display: none !important; }
+
+/* Index. */
+.docs-main { min-width: 0; }
+.docs-index h1, .docs-body h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 0.6rem; }
+.docs-lead { color: var(--ink-soft); font-size: 1.05rem; margin: 0 0 1.5rem; max-width: 46em; }
+.docs-group-heading { font-family: var(--font-display); font-size: 1.15rem; margin: 2rem 0 0.8rem; }
+.docs-cards { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.docs-card {
+  display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 1.1rem; border-radius: var(--r-md);
+  background: var(--surface); border: 2px solid var(--line); color: var(--ink); text-decoration: none;
+  box-shadow: var(--shadow-soft); transition: border-color 0.15s, transform 0.15s;
+}
+.docs-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+.docs-card-title { font-weight: 800; color: var(--teal-ink); }
+.docs-card-summary { font-size: 0.9rem; line-height: 1.5; color: var(--ink-soft); }
+
+/* A guide. */
+.docs-body {
+  max-width: 860px; padding: 1.6rem clamp(1rem, 3vw, 2.2rem) 2.2rem; border-radius: var(--r-lg);
+  background: var(--surface); border: 2px solid var(--line); box-shadow: var(--shadow);
+  font-size: 1rem; line-height: 1.7;
+}
+.docs-body + .docs-body { margin-top: 2rem; }
+.docs-body h2 {
+  font-family: var(--font-display); font-size: 1.35rem; margin: 2.2rem 0 0.6rem; padding-top: 1rem;
+  border-top: 2px dashed var(--line); scroll-margin-top: 6rem;
+}
+.docs-body h3 { font-family: var(--font-display); font-size: 1.08rem; margin: 1.5rem 0 0.4rem; scroll-margin-top: 6rem; }
+.docs-body h1 { scroll-margin-top: 6rem; }
+.docs-body p { margin: 0.6rem 0; }
+.docs-body ul, .docs-body ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+.docs-body li { margin: 0.25rem 0; }
+.docs-body a { color: var(--pink-ink); font-weight: 700; }
+.docs-body strong { font-weight: 800; }
+.docs-body hr { border: 0; border-top: 2px dashed var(--line); margin: 1.6rem 0; }
+.docs-body blockquote { margin: 0.8rem 0; padding-left: 1rem; border-left: 4px solid var(--teal-soft); color: var(--ink-soft); }
+.docs-body code {
+  font-family: var(--mono); font-size: 0.86em; padding: 0.1em 0.35em; border-radius: 6px; background: var(--bg-2);
+}
+.docs-code { position: relative; margin: 0.9rem 0; }
+.docs-body pre {
+  margin: 0.9rem 0; padding: 1rem 1.1rem; border-radius: 16px; overflow-x: auto;
+  background: var(--code-bg); color: var(--code-ink); font-size: 0.86rem; line-height: 1.6;
+}
+.docs-code pre { margin: 0; padding-top: 2.6rem; }
+.docs-body pre code { padding: 0; background: transparent; color: inherit; font-size: inherit; }
+.docs-body table {
+  display: block; width: max-content; max-width: 100%; overflow-x: auto; border-collapse: collapse;
+  margin: 1rem 0; font-size: 0.92rem;
+}
+.docs-body th, .docs-body td { padding: 0.45rem 0.7rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.docs-body th { background: var(--bg-2); font-weight: 800; }
+
+/* Code colors. Code blocks are dark in both themes, so one palette serves. */
+.docs-body .chroma :is(.c, .c1, .cm, .cp, .cs) { color: #8b93b8; font-style: italic; }
+.docs-body .chroma :is(.k, .kc, .kd, .kn, .kp, .kr, .kt, .err) { color: #ff9fb6; }
+.docs-body .chroma :is(.s, .s1, .s2, .sb, .sc, .sd, .se, .sh, .si, .sr, .ss, .sx) { color: #a6e3a1; }
+.docs-body .chroma :is(.m, .mb, .mf, .mh, .mi, .mo, .l, .ld) { color: #ffd88f; }
+.docs-body .chroma :is(.nb, .bp, .nv, .vi, .na, .nt) { color: #8cc8ff; }
+.docs-body .chroma :is(.nf, .nc, .nn, .ne, .nd) { color: #8ce6da; }
+.docs-body .chroma :is(.o, .ow, .p) { color: #c3c8e4; }

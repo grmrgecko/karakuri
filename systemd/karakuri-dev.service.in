@@ -1,0 +1,15 @@
+[Unit]
+Description=Karakuri development server
+
+[Service]
+Type=notify
+WorkingDirectory=@ROOT@/build
+ExecStart=@ROOT@/build/karakuri serve
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+StandardOutput=append:@ROOT@/build/var/karakuri-dev.log
+StandardError=append:@ROOT@/build/var/karakuri-dev.log
+
+[Install]
+WantedBy=default.target

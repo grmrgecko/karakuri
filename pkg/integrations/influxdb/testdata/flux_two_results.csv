@@ -1,0 +1,13 @@
+#datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,double,string,string,string
+#group,false,false,true,true,false,false,true,true,true
+#default,num,,,,,,,,
+,result,table,_start,_stop,_time,_value,_field,_measurement,host
+,,0,2025-10-30T04:53:00Z,2025-10-30T04:54:00Z,2025-10-30T04:53:20Z,1.5,value,probe_m,a b
+,,1,2025-10-30T04:53:00Z,2025-10-30T04:54:00Z,2025-10-30T04:53:22Z,2,value,probe_m,c
+
+#datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,string,string,string,string
+#group,false,false,true,true,false,false,true,true,true
+#default,text,,,,,,,,
+,result,table,_start,_stop,_time,_value,_field,_measurement,host
+,,0,2025-10-30T04:53:00Z,2025-10-30T04:54:00Z,2025-10-30T04:53:21Z,on,state,probe_m,c
+

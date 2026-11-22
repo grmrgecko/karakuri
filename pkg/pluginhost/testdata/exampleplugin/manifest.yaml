@@ -1,0 +1,5 @@
+name: "example"
+version: "0.1.0"
+description: "Example external plugin: an interval trigger and a counting transform."
+author: "Karakuri"
+entryPoint: "example"

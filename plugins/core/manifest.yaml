@@ -1,0 +1,674 @@
+# The resource directory of the compiled-in `core` plugin. There is no
+# entryPoint: core's node types register in Go, and this manifest declares only
+# the dashboard widgets that ship with them. The host recognises the name as a
+# built-in and attaches these widgets to it rather than loading a second
+# plugin, so they cannot be disabled independently of core itself.
+name: "core"
+version: "0.1.0"
+description: "Built-in dashboard widgets: display primitives, a clock, and the flow button."
+author: "Karakuri"
+
+widgets:
+  - name: "Image"
+    packageName: "image"
+    description: "Displays images with static or slideshow layouts"
+    tagName: "image-widget"
+    configTagName: "image-config"
+    tags: ["media", "image", "display"]
+  - name: "Video Player"
+    packageName: "video"
+    description: "Plays video from URLs, uploads, or embedded platforms like YouTube"
+    tagName: "video-widget"
+    configTagName: "video-config"
+    tags: ["media", "video", "display"]
+  - name: "Digital Clock"
+    packageName: "digital-clock"
+    description: "Configurable digital clock with multiple layout modes"
+    tagName: "digital-clock-widget"
+    configTagName: "digital-clock-config"
+    tags: ["time", "utility", "clock", "digital"]
+    configSchema:
+      type: object
+      properties:
+        timezone: {type: string}
+        format: {enum: ["24h", "12h"]}
+        showSeconds: {type: boolean}
+        fontStyle: {enum: [monospace, sans, segmented]}
+        color: {type: string}
+        layout: {enum: [standard-inline, stacked-vertical, big-date, world-list, retro-lcd, time-progress, sidebar-date]}
+        worldTimezones:
+          type: array
+          items:
+            type: object
+            properties:
+              timezone: {type: string}
+              label: {type: string}
+            required: [timezone, label]
+    defaultConfig:
+      timezone: ""
+      format: "24h"
+      showSeconds: true
+      fontStyle: monospace
+      color: ""
+      layout: standard-inline
+  # The dashboard's general-purpose card: a list of rows, each bound to a
+  # control, a Home Assistant entity, an MQTT topic, or a flow's widget
+  # trigger, and drawn with the control its source implies. It is one widget
+  # rather than one per source because a dashboard is read as a card of rows,
+  # not as a grid of single-value tiles.
+  - name: "Entities Card"
+    packageName: "entities-card"
+    description: "Card of rows bound to controls, Home Assistant entities, MQTT topics, and flow triggers"
+    tagName: "entities-card-widget"
+    configTagName: "entities-card-config"
+    tags: ["control", "state", "home-assistant", "mqtt", "automation"]
+    # Each row is one host binding, so a viewer of a dashboard holding this
+    # card may read exactly the entities, controls, devices, and triggers its
+    # rows name — and press the ones the author did not set to Value, if the
+    # dashboard permits operating at all.
+    scope:
+      bindings: "rows"
+    # The schema is open: it checks the appearance fields a row adds to its
+    # binding and leaves the source fields to the binding checks.
+    configSchema:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            type: object
+            properties:
+              states: &states
+                type: array
+                maxItems: 16
+                items:
+                  type: object
+                  properties:
+                    attribute: {type: string}
+                    operator: {enum: [equals, not_equals, contains, above, below]}
+                    value: {type: string}
+                    icon: {type: string}
+                    iconColor: {type: string}
+                    background: {type: string}
+                    color: {type: string}
+                    label: {type: string}
+              format: &format {enum: [duration, bytes, bytes_per_second, percent, number]}
+              precision: &precision {type: integer, minimum: 0, maximum: 6}
+  # The same binding as one of the card's rows, alone in its own cell and drawn
+  # to fill it. A card is how a dashboard is usually read, but a single light or
+  # a single scene deserves a tile a hand can hit from across the room, so the
+  # two share their source derivation (widgets/shared/) and differ only in
+  # layout.
+  - name: "Entity Control"
+    packageName: "entity-control"
+    description: "A single control, Home Assistant entity, MQTT topic, or flow trigger as one tile"
+    tagName: "entity-control-widget"
+    configTagName: "entity-control-config"
+    tags: ["control", "state", "home-assistant", "mqtt", "automation"]
+    # The config is itself one binding, the same shape as one of the card's
+    # rows.
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        states: *states
+        format: *format
+        precision: *precision
+  # One binding drawn as a square button: a large icon, a short label, and an
+  # optional reading, the whole tile pressing the binding's single action. It
+  # is the deck a phone remote or a wall panel of scenes is built from.
+  - name: "Button"
+    packageName: "button"
+    description: "One control, Home Assistant entity, MQTT device, or flow trigger as a square button"
+    tagName: "button-widget"
+    configTagName: "button-config"
+    tags: ["control", "button", "scene", "home-assistant", "mqtt", "automation"]
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        source: {enum: [control, ha, mqtt, flow-trigger]}
+        states: *states
+        format: *format
+        precision: *precision
+        showLabel: {type: boolean}
+        showValue: {type: boolean}
+        confirmFirst: {type: boolean}
+    defaultConfig:
+      source: control
+      showLabel: true
+      showValue: false
+  # A line that changes on an interval, picked from lists keyed by time of
+  # day, date, cron schedule, and weather condition. A flow can replace the
+  # lists with a content command until it clears them.
+  - name: "Rotating Message"
+    packageName: "rotating-message"
+    description: "Rotating lines chosen by time of day, date, schedule, and weather"
+    tagName: "rotating-message-widget"
+    configTagName: "rotating-message-config"
+    tags: ["text", "mirror", "display", "weather"]
+    # The optional weather field is one display-only binding whose value picks
+    # a condition list.
+    scope:
+      bindings: "weather"
+    configSchema:
+      type: object
+      properties:
+        lists:
+          type: object
+          additionalProperties:
+            type: array
+            items: {type: string}
+        morningStart: {type: integer, minimum: 0, maximum: 24}
+        morningEnd: {type: integer, minimum: 0, maximum: 24}
+        afternoonStart: {type: integer, minimum: 0, maximum: 24}
+        afternoonEnd: {type: integer, minimum: 0, maximum: 24}
+        specialDayUnique: {type: boolean}
+        interval: {type: number, minimum: 2}
+        fade: {type: number, minimum: 0}
+        align: {enum: [left, center, right]}
+        size: {enum: [small, medium, large, fit]}
+        weather:
+          type: object
+          properties:
+            source: {enum: [ha, control, mqtt]}
+            connectionId: {type: string}
+            entityId: {type: string}
+            controlId: {type: string}
+            deviceId: {type: string}
+            displayOnly: {type: boolean}
+    defaultConfig:
+      lists:
+        anytime: ["Hello there", "Have a good day"]
+        morning: ["Good morning", "Rise and shine"]
+        afternoon: ["Good afternoon", "Looking good today"]
+        evening: ["Good evening", "Time to wind down"]
+        "....-01-01": ["Happy new year"]
+      morningStart: 3
+      morningEnd: 12
+      afternoonStart: 12
+      afternoonEnd: 17
+      specialDayUnique: false
+      interval: 30
+      fade: 1000
+      align: center
+      size: fit
+  # Whatever a flow last pushed with a content command: plain text, Markdown
+  # rendered by the server, or JSON.
+  - name: "Flow Text"
+    packageName: "flow-text"
+    description: "Text, Markdown, or JSON pushed by a flow"
+    tagName: "flow-text-widget"
+    configTagName: "flow-text-config"
+    tags: ["text", "markdown", "automation", "display"]
+    configSchema:
+      type: object
+      properties:
+        title: {type: string}
+        placeholder: {type: string}
+        align: {enum: [left, center, right]}
+        size: {enum: [small, medium, large, fit]}
+        # A list of objects is drawn as a table: columns picks and orders its
+        # keys (empty means every key, in first-seen order) and columnLabels
+        # renames headers.
+        columns:
+          type: array
+          items: {type: string}
+        columnLabels:
+          type: object
+          additionalProperties: {type: string}
+        maxRows: {type: integer, minimum: 0}
+    defaultConfig:
+      title: ""
+      placeholder: "Waiting for content"
+      align: left
+      size: medium
+      columns: []
+      columnLabels: {}
+      maxRows: 0
+  # Headlines from RSS and Atom feeds. The server fetches the URLs saved in
+  # the placement's config, so the widget asks for its placement and never
+  # names a URL; the route checks dashboard view access itself, so there is no
+  # scope to declare.
+  - name: "News Feed"
+    packageName: "news-feed"
+    description: "Headlines from RSS and Atom feeds"
+    tagName: "news-feed-widget"
+    configTagName: "news-feed-config"
+    tags: ["news", "rss", "mirror", "display"]
+    configSchema:
+      type: object
+      properties:
+        feeds:
+          type: array
+          maxItems: 5
+          items:
+            type: object
+            properties:
+              url: {type: string}
+              title: {type: string}
+            required: [url]
+        interval: {type: number, minimum: 2}
+        reload: {type: number, minimum: 1}
+        maxItems: {type: integer, minimum: 1}
+        maxAgeHours: {type: number, minimum: 0}
+        showDescription: {type: boolean}
+        showSource: {type: boolean}
+        showTime: {type: boolean}
+        layout: {enum: [ticker, list]}
+        listSize: {type: integer, minimum: 1}
+    defaultConfig:
+      feeds: []
+      interval: 10
+      reload: 5
+      maxItems: 20
+      maxAgeHours: 0
+      showDescription: false
+      showSource: true
+      showTime: true
+      layout: ticker
+      listSize: 5
+  # A Home Assistant or NVR camera as a live MJPEG stream or a still
+  # refreshed on an interval. The server relays both with the connection's
+  # credentials, so the config is one display-only binding and placing the
+  # widget is what lets a dashboard's viewers see that camera and no other.
+  - name: "Camera"
+    packageName: "camera"
+    description: "A Home Assistant or Frigate camera as a live stream or refreshing snapshots"
+    tagName: "camera-widget"
+    configTagName: "camera-config"
+    tags: ["camera", "home-assistant", "frigate", "nvr", "media", "security", "display"]
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        source: {enum: [ha, nvr]}
+        connectionId: {type: string}
+        entityId: {type: string}
+        camera: {type: string}
+        displayOnly: {type: boolean}
+        mode: {enum: [live, snapshot]}
+        interval: {type: number, minimum: 1}
+        fit: {enum: [cover, contain]}
+        showName: {type: boolean}
+        bbox: {type: boolean}
+    defaultConfig:
+      source: ha
+      connectionId: ""
+      entityId: ""
+      camera: ""
+      displayOnly: true
+      mode: live
+      interval: 10
+      fit: cover
+      showName: false
+      bbox: false
+  # Recent events of an NVR camera, or of every camera with "*", with
+  # thumbnails and clips relayed by the server. The config is one display-only
+  # binding, so viewers read the events of the cameras it names and no others.
+  - name: "NVR Events"
+    packageName: "nvr-events"
+    description: "Recent Frigate events with thumbnails, playing a clip on tap"
+    tagName: "nvr-events-widget"
+    configTagName: "nvr-events-config"
+    tags: ["frigate", "nvr", "camera", "security", "events", "display"]
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        source: {enum: [nvr]}
+        connectionId: {type: string}
+        camera: {type: string}
+        displayOnly: {type: boolean}
+        labels: {type: string}
+        zones: {type: string}
+        limit: {type: number, minimum: 1, maximum: 100}
+        showThumbnails: {type: boolean}
+    defaultConfig:
+      source: nvr
+      connectionId: ""
+      camera: "*"
+      displayOnly: true
+      labels: ""
+      zones: ""
+      limit: 10
+      showThumbnails: true
+  # The event log's recent entries for the controls, devices, and entities its
+  # rows name. Each row is a display-only binding, so viewers read those
+  # subjects' entries and no others, and never security entries.
+  - name: "Activity"
+    packageName: "activity"
+    description: "Recent event log entries for chosen controls, devices, and entities, with who did it"
+    tagName: "activity-widget"
+    configTagName: "activity-config"
+    tags: ["activity", "events", "history", "display"]
+    scope:
+      bindings: "rows"
+    configSchema:
+      type: object
+      properties:
+        rows:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              source: {enum: [control, mqtt, ha]}
+              controlId: {type: string}
+              deviceId: {type: string}
+              connectionId: {type: string}
+              entityId: {type: string}
+              displayOnly: {type: boolean}
+        categories: {type: string}
+        levels: {type: string}
+        limit: {type: number, minimum: 1, maximum: 50}
+        showActor: {type: boolean}
+    defaultConfig:
+      rows: []
+      categories: ""
+      levels: ""
+      limit: 10
+      showActor: true
+  # What a media player is playing. The config is one binding;
+  # its controls are drawn only when the binding is not display only, and the
+  # server still holds every press to the dashboard's control policy.
+  - name: "Now Playing"
+    packageName: "media-player"
+    description: "Cover art, track, and progress of a media player, with playback controls"
+    tagName: "media-player-widget"
+    configTagName: "media-player-config"
+    tags: ["media", "music", "home-assistant", "control", "display"]
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        source: {enum: [ha, control, mqtt]}
+        connectionId: {type: string}
+        entityId: {type: string}
+        controlId: {type: string}
+        deviceId: {type: string}
+        displayOnly: {type: boolean}
+        showArt: {type: boolean}
+        showControls: {type: boolean}
+        showVolume: {type: boolean}
+        layout: {enum: [card, compact]}
+    defaultConfig:
+      source: ha
+      connectionId: ""
+      entityId: ""
+      displayOnly: false
+      showArt: true
+      showControls: true
+      showVolume: false
+      layout: card
+  # A Home Assistant todo entity: any list Home Assistant syncs. Ticking and
+  # adding items are service calls on the one bound entity, so they follow the
+  # same display-only flag and control policy as any other press.
+  - name: "To-do List"
+    packageName: "todo-list"
+    description: "A Home Assistant to-do or shopping list with items to tick off and add"
+    tagName: "todo-list-widget"
+    configTagName: "todo-list-config"
+    tags: ["todo", "list", "shopping", "home-assistant", "mirror"]
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        source: {enum: [ha]}
+        connectionId: {type: string}
+        entityId: {type: string}
+        displayOnly: {type: boolean}
+        title: {type: string}
+        showCompleted: {type: boolean}
+        allowAdd: {type: boolean}
+        maxItems: {type: integer, minimum: 0}
+    defaultConfig:
+      source: ha
+      connectionId: ""
+      entityId: ""
+      displayOnly: false
+      title: ""
+      showCompleted: false
+      allowAdd: true
+      maxItems: 0
+  # Readings over the last hours. Each series is a display-only binding:
+  # Home Assistant series start from recorded history, while controls and MQTT
+  # devices keep none and start when the page loads.
+  - name: "History Graph"
+    packageName: "history-graph"
+    description: "Home Assistant, control, and MQTT device readings graphed over time"
+    tagName: "history-graph-widget"
+    configTagName: "history-graph-config"
+    tags: ["graph", "history", "sensor", "home-assistant", "mqtt", "mirror"]
+    scope:
+      bindings: "series"
+    configSchema:
+      type: object
+      properties:
+        series:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              source: {enum: [ha, control, mqtt]}
+              connectionId: {type: string}
+              entityId: {type: string}
+              controlId: {type: string}
+              deviceId: {type: string}
+              deviceField: {type: string}
+              name: {type: string}
+              color: {type: string}
+              displayOnly: {type: boolean}
+            required: [id, source]
+        hours: {type: integer, minimum: 1, maximum: 168}
+        style: {enum: [line, area, step]}
+        min: {type: [number, "null"]}
+        max: {type: [number, "null"]}
+        showLegend: {type: boolean}
+        showCurrent: {type: boolean}
+    defaultConfig:
+      series: []
+      hours: 24
+      style: line
+      showLegend: true
+      showCurrent: true
+  # Charts of time-series connection queries. The server runs
+  # the queries saved in the placement's config, so the widget asks for its
+  # placement and never sends query text; the route checks dashboard view
+  # access itself, so there is no scope to declare. Visualization and field
+  # options stay open objects.
+  - name: "Chart"
+    packageName: "chart"
+    description: "Graphs, stats, gauges, and tables of time-series database queries"
+    tagName: "chart-widget"
+    configTagName: "chart-config"
+    tags: ["chart", "graph", "timeseries", "prometheus", "influxdb", "postgres", "history", "display"]
+    configSchema:
+      type: object
+      properties:
+        viz: {enum: [timeseries, trend, barchart, stat, gauge, bargauge, table, piechart, state-timeline, status-history, heatmap, histogram, candlestick, xychart]}
+        queries:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              refId: {type: string, minLength: 1}
+              connectionId: {type: string}
+              language: {enum: ["", promql, influxql, flux, sql, ha_history, ha_statistics]}
+              text: {type: string}
+              ha:
+                type: [object, "null"]
+                properties:
+                  entities: {type: array, items: {type: string}}
+                  attribute: {type: string}
+                  statistic_ids: {type: array, items: {type: string}}
+                  period: {type: string}
+                  types: {type: array, items: {type: string}}
+              legendFormat: {type: string}
+              maxDataPoints: {type: integer, minimum: 0}
+              minInterval: {type: string}
+              instant: {type: boolean}
+              format: {enum: [time_series, table]}
+              hide: {type: boolean}
+            required: [refId]
+        timeRange: {type: string}
+        relativeTime: {type: string}
+        timeShift: {type: string}
+        refresh: {type: [string, number]}
+        maxDataPoints: {type: integer, minimum: 0}
+        fieldConfig:
+          type: object
+          properties:
+            defaults: {type: object}
+            overrides:
+              type: array
+              items:
+                type: object
+                properties:
+                  matcher:
+                    type: object
+                    properties:
+                      id: {type: string}
+                    required: [id]
+                  properties:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: {type: string}
+                      required: [id]
+                required: [matcher]
+        transformations:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              options: {type: object}
+              disabled: {type: boolean}
+            required: [id]
+        options: {type: object}
+    defaultConfig:
+      viz: timeseries
+      queries:
+        - refId: A
+          connectionId: ""
+          language: ""
+          text: ""
+          ha: null
+          legendFormat: ""
+          maxDataPoints: 0
+          minInterval: ""
+          instant: false
+          format: time_series
+          hide: false
+      timeRange: "now-6h,now"
+      relativeTime: ""
+      timeShift: ""
+      refresh: "30s"
+      maxDataPoints: 0
+      fieldConfig:
+        defaults: {}
+        overrides: []
+      transformations: []
+      options: {}
+  # Days until dated events, counted in the viewer's local time. A yearly
+  # event moves to next year's date once its day is over.
+  - name: "Countdown"
+    packageName: "countdown"
+    description: "Days until dated events, with yearly events that roll over"
+    tagName: "countdown-widget"
+    configTagName: "countdown-config"
+    tags: ["time", "countdown", "calendar", "display"]
+    configSchema:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              label: {type: string}
+              date: {type: string, description: "YYYY-MM-DD"}
+              time: {type: string, description: "HH:MM, optional"}
+              yearly: {type: boolean}
+            required: [label, date]
+        layout: {enum: [single, list]}
+        units: {enum: [days, auto]}
+        maxItems: {type: integer, minimum: 1}
+        showPast: {type: boolean}
+        todayLabel: {type: string}
+    defaultConfig:
+      events: []
+      layout: single
+      units: days
+      maxItems: 5
+      showPast: false
+      todayLabel: "Today"
+  # A QR code phones read as a network to join. The password is in the
+  # placement's config, so every viewer of the dashboard can read it there,
+  # as they can by scanning the code; the config panel says so.
+  - name: "Wi-Fi QR"
+    packageName: "wifi-qr"
+    description: "A QR code that joins guests to a Wi-Fi network"
+    tagName: "wifi-qr-widget"
+    configTagName: "wifi-qr-config"
+    tags: ["wifi", "network", "qr", "guest", "display"]
+    configSchema:
+      type: object
+      properties:
+        ssid: {type: string}
+        password: {type: string}
+        security: {enum: [WPA, WEP, nopass]}
+        hidden: {type: boolean}
+        label: {type: string}
+        showPassword: {type: boolean}
+        colors: {enum: [plain, theme]}
+    defaultConfig:
+      ssid: ""
+      password: ""
+      security: WPA
+      hidden: false
+      label: ""
+      showPassword: false
+      colors: plain
+  # A dashboard variable's options as buttons, for a touch screen where the
+  # picker's dropdown is awkward. Set to every screen, the placement is a
+  # variable binding: it grants setting that one variable, which still needs
+  # the dashboard's control policy, the way a trigger row grants one press.
+  - name: "Variable Buttons"
+    packageName: "variable-buttons"
+    description: "Buttons that switch a dashboard variable for this screen or every screen"
+    tagName: "variable-buttons-widget"
+    configTagName: "variable-buttons-config"
+    tags: ["variables", "touch", "mirror", "control", "display"]
+    scope:
+      bindings: "."
+    configSchema:
+      type: object
+      properties:
+        source: {enum: [variable]}
+        variable: {type: string}
+        scope: {enum: [screen, dashboard]}
+        displayOnly: {type: boolean}
+        layout: {enum: [row, column, grid]}
+        size: {enum: [small, medium, large, fit]}
+        showLabel: {type: boolean}
+    defaultConfig:
+      source: variable
+      variable: ""
+      scope: screen
+      displayOnly: true
+      layout: row
+      size: medium
+      showLabel: false

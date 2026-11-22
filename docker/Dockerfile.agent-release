@@ -1,0 +1,32 @@
+# Agent image assembled from the agent's release archives, built by
+# `make docker-agent-release`. Dockerfile.agent builds the same image from a
+# checkout; this one compiles nothing, so the image ships the binary the
+# archive does.
+FROM debian:trixie-slim
+
+# Command and script nodes run in this image, which is why it is Debian rather
+# than a bare static one: bash, coreutils, and apt for an image that extends it.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+# The context holds one unpacked archive per architecture, and TARGETARCH picks
+# this image's. buildx sets it per platform; a plain build passes it.
+ARG TARGETARCH
+COPY ${TARGETARCH}/karakuri-agent /usr/local/bin/karakuri-agent
+COPY agent.yaml /etc/karakuri/agent.yaml
+COPY agent-entrypoint.sh /usr/local/bin/karakuri-agent-entrypoint
+
+# Nodes run with the agent's permissions, so the default account is an
+# unprivileged one; `docker run --user root` is the choice to make otherwise.
+RUN mkdir -p /var/lib/karakuri && \
+    useradd --system --home-dir /var/lib/karakuri --shell /usr/sbin/nologin karakuri && \
+    chown -R karakuri:karakuri /var/lib/karakuri
+
+USER karakuri
+WORKDIR /var/lib/karakuri
+
+VOLUME ["/var/lib/karakuri"]
+
+ENTRYPOINT ["/usr/local/bin/karakuri-agent-entrypoint"]
+CMD ["run"]

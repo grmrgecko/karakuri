@@ -1,0 +1,217 @@
+[
+  {
+    "name": "colour light",
+    "entity": {"entity_id": "light.kitchen", "state": "on", "attributes": {
+      "supported_color_modes": ["color_temp", "hs"], "brightness": 102, "rgb_color": [255, 136, 0],
+      "color_temp_kelvin": 3000, "min_color_temp_kelvin": 2200, "max_color_temp_kelvin": 6500,
+      "effect_list": ["Rainbow"], "effect": "Rainbow"}},
+    "kind": "light", "readOnly": false,
+    "options": {"brightness": true, "color": true, "color_temp": true, "min_kelvin": 2200, "max_kelvin": 6500,
+      "effects": true, "effect_list": [{"value": "Rainbow", "label": "Rainbow"}]},
+    "value": {"on": true, "brightness": 40, "color": "#ff8800", "color_temp": 3000, "effect": "Rainbow"},
+    "writes": [
+      {"attribute": "on", "value": false, "call": {"domain": "light", "service": "turn_off"}},
+      {"attribute": "brightness", "value": 40, "call": {"domain": "light", "service": "turn_on", "data": {"brightness_pct": 40}}},
+      {"attribute": "color", "value": "#ff8800", "call": {"domain": "light", "service": "turn_on", "data": {"rgb_color": [255, 136, 0]}}},
+      {"attribute": "color_temp", "value": 3000, "call": {"domain": "light", "service": "turn_on", "data": {"color_temp_kelvin": 3000}}},
+      {"attribute": "effect", "value": "Rainbow", "call": {"domain": "light", "service": "turn_on", "data": {"effect": "Rainbow"}}}
+    ]
+  },
+  {
+    "name": "on-off light",
+    "entity": {"entity_id": "light.porch", "state": "off", "attributes": {"supported_color_modes": ["onoff"]}},
+    "kind": "light", "readOnly": false,
+    "options": {"brightness": false, "color": false, "color_temp": false, "min_kelvin": 2000, "max_kelvin": 6500,
+      "effects": false, "effect_list": []},
+    "value": {"on": false},
+    "writes": [{"attribute": "on", "value": true, "call": {"domain": "light", "service": "turn_on"}}]
+  },
+  {
+    "name": "switch",
+    "entity": {"entity_id": "switch.plug", "state": "on", "attributes": {}},
+    "kind": "boolean", "readOnly": false,
+    "options": {"unit": ""},
+    "value": true,
+    "writes": [
+      {"attribute": "on", "value": false, "call": {"domain": "switch", "service": "turn_off"}},
+      {"attribute": "on", "value": true, "call": {"domain": "switch", "service": "turn_on"}}
+    ]
+  },
+  {
+    "name": "fan",
+    "entity": {"entity_id": "fan.bedroom", "state": "on", "attributes": {"percentage": 33, "percentage_step": 33.33,
+      "preset_modes": ["sleep"], "preset_mode": "sleep", "oscillating": false, "direction": "forward"}},
+    "kind": "fan", "readOnly": false,
+    "options": {"speed": true, "speed_step": 33.33, "presets": true, "preset_list": [{"value": "sleep", "label": "sleep"}],
+      "oscillate": true, "direction": true},
+    "value": {"on": true, "percentage": 33, "preset": "sleep", "oscillating": false, "direction": "forward"},
+    "writes": [
+      {"attribute": "on", "value": false, "call": {"domain": "fan", "service": "turn_off"}},
+      {"attribute": "percentage", "value": 66, "call": {"domain": "fan", "service": "set_percentage", "data": {"percentage": 66}}},
+      {"attribute": "preset", "value": "sleep", "call": {"domain": "fan", "service": "set_preset_mode", "data": {"preset_mode": "sleep"}}},
+      {"attribute": "oscillating", "value": true, "call": {"domain": "fan", "service": "oscillate", "data": {"oscillating": true}}},
+      {"attribute": "direction", "value": "reverse", "call": {"domain": "fan", "service": "set_direction", "data": {"direction": "reverse"}}}
+    ]
+  },
+  {
+    "name": "cover",
+    "entity": {"entity_id": "cover.blind", "state": "open", "attributes": {"current_position": 70}},
+    "kind": "cover", "readOnly": false,
+    "options": {"position": true, "tilt": false, "stop": true},
+    "value": {"state": "open", "position": 70},
+    "writes": [
+      {"attribute": "state", "value": "open", "call": {"domain": "cover", "service": "open_cover"}},
+      {"attribute": "state", "value": "closed", "call": {"domain": "cover", "service": "close_cover"}},
+      {"attribute": "state", "value": "stopped", "call": {"domain": "cover", "service": "stop_cover"}},
+      {"attribute": "position", "value": 30, "call": {"domain": "cover", "service": "set_cover_position", "data": {"position": 30}}},
+      {"attribute": "tilt", "value": 10, "call": {"domain": "cover", "service": "set_cover_tilt_position", "data": {"tilt_position": 10}}}
+    ]
+  },
+  {
+    "name": "range thermostat",
+    "entity": {"entity_id": "climate.hall", "state": "heat_cool", "attributes": {"hvac_modes": ["off", "heat_cool"],
+      "min_temp": 10, "max_temp": 30, "target_temp_step": 1, "unit_of_measurement": "°C",
+      "target_temp_low": 18, "target_temp_high": 24, "current_temperature": 21.5, "hvac_action": "idle",
+      "fan_modes": ["auto"], "fan_mode": "auto"}},
+    "kind": "climate", "readOnly": false,
+    "options": {"modes": [{"value": "off", "label": "off"}, {"value": "heat_cool", "label": "heat_cool"}],
+      "min_temp": 10, "max_temp": 30, "step": 1, "unit": "°C", "range": true, "fan": true,
+      "fan_modes": [{"value": "auto", "label": "auto"}]},
+    "value": {"mode": "heat_cool", "target_low": 18, "target_high": 24, "current": 21.5, "fan_mode": "auto", "action": "idle"},
+    "writes": [
+      {"attribute": "mode", "value": "off", "call": {"domain": "climate", "service": "set_hvac_mode", "data": {"hvac_mode": "off"}}},
+      {"attribute": "fan_mode", "value": "auto", "call": {"domain": "climate", "service": "set_fan_mode", "data": {"fan_mode": "auto"}}},
+      {"attribute": "target_low", "value": 17, "call": {"domain": "climate", "service": "set_temperature", "data": {"target_temp_low": 17, "target_temp_high": 24}}},
+      {"attribute": "target", "value": 20, "call": {"domain": "climate", "service": "set_temperature", "data": {"temperature": 20}}}
+    ]
+  },
+  {
+    "name": "water heater",
+    "entity": {"entity_id": "water_heater.tank", "state": "eco", "attributes": {"operation_list": ["eco", "off"], "temperature": 50}},
+    "kind": "climate", "readOnly": false,
+    "options": {"modes": [{"value": "eco", "label": "eco"}, {"value": "off", "label": "off"}],
+      "min_temp": 7, "max_temp": 35, "step": 0.5, "unit": "°", "range": false, "fan": false, "fan_modes": []},
+    "value": {"mode": "eco", "target": 50},
+    "writes": [
+      {"attribute": "mode", "value": "off", "call": {"domain": "water_heater", "service": "set_operation_mode", "data": {"operation_mode": "off"}}}
+    ]
+  },
+  {
+    "name": "lock",
+    "entity": {"entity_id": "lock.front", "state": "locked", "attributes": {}},
+    "kind": "lock", "readOnly": false,
+    "options": {"unit": ""},
+    "value": "locked",
+    "writes": [
+      {"attribute": "state", "value": "unlocked", "call": {"domain": "lock", "service": "unlock"}},
+      {"attribute": "state", "value": "locked", "call": {"domain": "lock", "service": "lock"}}
+    ]
+  },
+  {
+    "name": "scene",
+    "entity": {"entity_id": "scene.movie", "state": "2026-11-06T08:00:00+00:00", "attributes": {}},
+    "kind": "buttons", "readOnly": false,
+    "options": {"unit": ""},
+    "value": "2026-11-06T08:00:00+00:00",
+    "writes": [{"attribute": "value", "value": true, "call": {"domain": "scene", "service": "turn_on"}}]
+  },
+  {
+    "name": "automation",
+    "entity": {"entity_id": "automation.night", "state": "on", "attributes": {}},
+    "kind": "buttons", "readOnly": false,
+    "options": {"unit": ""},
+    "value": "on",
+    "writes": [{"attribute": "value", "value": true, "call": {"domain": "automation", "service": "trigger"}}]
+  },
+  {
+    "name": "button",
+    "entity": {"entity_id": "button.restart", "state": "unknown", "attributes": {}},
+    "kind": "buttons", "readOnly": false,
+    "options": {"unit": ""},
+    "value": "unknown",
+    "writes": [{"attribute": "value", "value": true, "call": {"domain": "button", "service": "press"}}]
+  },
+  {
+    "name": "number",
+    "entity": {"entity_id": "input_number.delay", "state": "5", "attributes": {"min": 1, "max": 10, "step": 1, "mode": "box", "unit_of_measurement": "min"}},
+    "kind": "number", "readOnly": false,
+    "options": {"min": 1, "max": 10, "step": 1, "unit": "min", "display": "box"},
+    "value": 5,
+    "writes": [{"attribute": "value", "value": 7, "call": {"domain": "input_number", "service": "set_value", "data": {"value": 7}}}]
+  },
+  {
+    "name": "select",
+    "entity": {"entity_id": "input_select.mode", "state": "Home", "attributes": {"options": ["Home", "Away"]}},
+    "kind": "select", "readOnly": false,
+    "options": {"options": [{"value": "Home", "label": "Home"}, {"value": "Away", "label": "Away"}], "display": "dropdown"},
+    "value": "Home",
+    "writes": [{"attribute": "value", "value": "Away", "call": {"domain": "input_select", "service": "select_option", "data": {"option": "Away"}}}]
+  },
+  {
+    "name": "text",
+    "entity": {"entity_id": "input_text.note", "state": "hello", "attributes": {}},
+    "kind": "text", "readOnly": false,
+    "options": {"unit": ""},
+    "value": "hello",
+    "writes": [{"attribute": "value", "value": "bye", "call": {"domain": "input_text", "service": "set_value", "data": {"value": "bye"}}}]
+  },
+  {
+    "name": "person",
+    "entity": {"entity_id": "person.sam", "state": "home", "last_changed": "2026-11-06T07:00:00+00:00",
+      "attributes": {"latitude": 41.88, "longitude": -87.63, "gps_accuracy": 20, "source": "device_tracker.phone"}},
+    "kind": "location", "readOnly": true,
+    "options": {"zones": [{"value": "home", "label": "Home"}, {"value": "not_home", "label": "Away"}]},
+    "value": {"state": "home", "latitude": 41.88, "longitude": -87.63, "accuracy": 20, "source": "device_tracker.phone",
+      "since": "2026-11-06T07:00:00+00:00"},
+    "writes": [{"attribute": "state", "value": "not_home", "call": null}]
+  },
+  {
+    "name": "media player",
+    "entity": {"entity_id": "media_player.living", "state": "playing", "attributes": {
+      "supported_features": 22591, "volume_level": 0.25, "is_volume_muted": false,
+      "media_title": "Song", "media_artist": "Band", "media_album_name": "Album",
+      "entity_picture": "/api/media_player_proxy/media_player.living", "media_position": 30, "media_duration": 200,
+      "media_position_updated_at": "2026-11-06T08:00:00+00:00", "source": "TV", "source_list": ["TV", "Radio"]}},
+    "kind": "media", "readOnly": false,
+    "options": {"volume": true, "mute": true, "skip": true, "seek": true, "source": true, "power": false, "stop": true},
+    "value": {"state": "playing", "volume": 25, "muted": false, "title": "Song", "artist": "Band", "album": "Album",
+      "art": "/api/media_player_proxy/media_player.living", "position": 30, "duration": 200,
+      "position_at": "2026-11-06T08:00:00+00:00", "source": "TV", "sources": ["TV", "Radio"]},
+    "writes": [
+      {"attribute": "state", "value": "paused", "call": {"domain": "media_player", "service": "media_pause"}},
+      {"attribute": "state", "value": "playing", "call": {"domain": "media_player", "service": "media_play"}},
+      {"attribute": "state", "value": "idle", "call": {"domain": "media_player", "service": "media_stop"}},
+      {"attribute": "state", "value": "off", "call": {"domain": "media_player", "service": "turn_off"}},
+      {"attribute": "volume", "value": 40, "call": {"domain": "media_player", "service": "volume_set", "data": {"volume_level": 0.4}}},
+      {"attribute": "muted", "value": true, "call": {"domain": "media_player", "service": "volume_mute", "data": {"is_volume_muted": true}}},
+      {"attribute": "source", "value": "Radio", "call": {"domain": "media_player", "service": "select_source", "data": {"source": "Radio"}}},
+      {"attribute": "position", "value": 90, "call": {"domain": "media_player", "service": "media_seek", "data": {"seek_position": 90}}},
+      {"attribute": "command", "value": "next", "call": {"domain": "media_player", "service": "media_next_track"}},
+      {"attribute": "command", "value": "previous", "call": {"domain": "media_player", "service": "media_previous_track"}}
+    ]
+  },
+  {
+    "name": "standby player",
+    "entity": {"entity_id": "media_player.tv", "state": "standby", "attributes": {"supported_features": 384}},
+    "kind": "media", "readOnly": false,
+    "options": {"volume": false, "mute": false, "skip": false, "seek": false, "source": false, "power": true, "stop": false},
+    "value": {"state": "off"},
+    "writes": [{"attribute": "state", "value": "on", "call": {"domain": "media_player", "service": "turn_on"}}]
+  },
+  {
+    "name": "sensor",
+    "entity": {"entity_id": "sensor.temperature", "state": "21.4", "attributes": {"unit_of_measurement": "°C", "suggested_display_precision": 1}},
+    "kind": "text", "readOnly": true,
+    "options": {"unit": "°C", "precision": 1},
+    "value": "21.4",
+    "writes": [{"attribute": "value", "value": "20", "call": null}]
+  },
+  {
+    "name": "binary sensor",
+    "entity": {"entity_id": "binary_sensor.door", "state": "off", "attributes": {"device_class": "door"}},
+    "kind": "text", "readOnly": true,
+    "options": {"unit": ""},
+    "value": "off",
+    "writes": []
+  }
+]

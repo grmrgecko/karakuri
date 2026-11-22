@@ -1,0 +1,29 @@
+name: "crypto"
+version: "0.1.0"
+description: "Cryptocurrency prices for dashboards and flows, via Binance, Coinbase, or CoinGecko."
+author: "James Coleman"
+
+# The gRPC executable: flow nodes, an HTTP API, settings, and reactive polling.
+entryPoint: "crypto"
+
+# The dashboard widget reading that API.
+widgets:
+  - name: "Crypto"
+    packageName: "crypto"
+    tagName: "crypto-widget"
+    configTagName: "crypto-config"
+    tags: ["crypto", "finance", "market"]
+    defaultProvider: "coinbase"
+    # Prices come from this plugin's own topic and API rather than a host
+    # binding, so the plugin declares them. The routes are the quote, history,
+    # and trending reads the widget makes; symbol search belongs to the config
+    # panel, whose author holds api:crypto:read. The topic is a namespace: a
+    # viewer of a dashboard holding this widget can read any pair's price,
+    # which is the boundary this plugin chooses for public market data.
+    scope:
+      topics:
+        - "market:crypto:*"
+      api:
+        - "GET /*/*/*"
+        - "GET /*/*/*/history"
+        - "GET /*/trending"

@@ -1,0 +1,94 @@
+# Build output. `make` assembles the binary, frontend assets, generated config
+# (which holds real secrets after first run), the SQLite database, and the
+# downloaded 26 MB CPython wasm module all under build/.
+/build/
+
+# Release output. goreleaser writes archives and checksums to dist/, the
+# container runs keep their Go module and build caches in .cache/, and
+# .release-env holds the token `make release` publishes with.
+/dist/
+/.cache/
+.release-env
+
+# Frontend dependencies and bundle output. The bundle is built into the
+# directory the server embeds; its .gitkeep is tracked so the embed resolves
+# before the frontend has been built.
+frontend/node_modules/
+frontend/dist/
+/pkg/http/dist/*
+!/pkg/http/dist/.gitkeep
+
+# Dashboard widget dependencies and bundle output. Widgets ship inside the
+# plugin that contributes them, so these live under plugins/<name>/widgets/.
+plugins/*/widgets/*/node_modules/
+plugins/*/widgets/*/dist/
+plugins/*/widgets/*/.vite/
+
+# Local databases and logs, wherever a developer points the server at.
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Local configuration overrides, which may hold credentials.
+config.yaml
+config.local.yaml
+.env
+.env.*
+
+# Binaries a bare `go build ./cmd/...` or `go build ./plugins/...` drops in the
+# repo root, named after the package's directory. The real build output goes
+# under build/, so anything here is an accident worth ignoring rather than
+# committing: they are tens of megabytes each.
+/karakuri
+/karakuri.exe
+/karakuri-agent
+/karakuri-agent.exe
+/karakuri-auto
+/karakuri-auto.exe
+/calendar
+/crypto
+/dmx
+/midi
+/osc
+/stock
+/weather
+
+# Go test and profiling output.
+*.test
+*.out
+coverage.html
+coverage/
+
+# Editor and OS noise.
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+
+# Local multi-module dev; builds use the replace directive in go.mod
+go.work
+go.work.sum
+
+# Local binary left by the automation command's former module-local build.
+automation/autotest
+automation/autotest.exe
+
+# macOS signing and notarization credentials (docker/macos-sign.sh). The
+# certificate and App Store Connect key are also caught by name, for a copy
+# exported or downloaded outside .signing/.
+.signing/
+*.p12
+AuthKey_*.p8
+
+# Claude Code's local state. Only the project's skills are tracked.
+/.claude/*
+!/.claude/skills/
+
+# make website renders the guides into this page; it is rebuilt, not edited.
+/website/docs.html

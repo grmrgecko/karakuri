@@ -1,0 +1,26 @@
+# Karakuri server. Start it with `docker compose up -d`, then create the first
+# admin account:
+#
+#   docker compose exec karakuri karakuri user create admin admin@example.com <password> --admin
+#
+# The configuration, with fresh secrets, is written into the config volume on
+# first start. Keep both volumes: the database and the encryption key cannot be
+# regenerated.
+services:
+  karakuri:
+    image: grmrgecko/karakuri:latest
+    container_name: karakuri
+    restart: unless-stopped
+    # Shutdown drains HTTP, stops plugins, and suspends runs, which can take
+    # longer than Docker's default ten seconds before it kills the process.
+    stop_grace_period: 45s
+    ports:
+      - "8080:8080" # Web interface and API.
+      - "9443:9443" # Remote agents dial this port.
+    volumes:
+      - karakuri-data:/var/lib/karakuri
+      - karakuri-config:/etc/karakuri
+
+volumes:
+  karakuri-data:
+  karakuri-config:
