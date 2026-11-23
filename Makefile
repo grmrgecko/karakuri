@@ -386,6 +386,15 @@ DASHBOARD_RENDERS  ?= 1
 website:
 	go run ./tools/website-docs -template tools/website-docs/docs.html.tmpl -out website/docs.html
 
+# website-og renders the link preview card in tools/website-og/card.html into
+# website/assets/og-image.png with headless Chromium. Rerun it after changing
+# the card or the mascot.
+.PHONY: website-og
+website-og:
+	chromium --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
+		--window-size=1200,630 --virtual-time-budget=5000 \
+		--screenshot=website/assets/og-image.png "file://$(CURDIR)/tools/website-og/card.html"
+
 .PHONY: docker
 docker:
 	docker build -t karakuri:$(VERSION) --build-arg VERSION=$(VERSION) \

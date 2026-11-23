@@ -1,0 +1,61 @@
+<!doctype html>
+<!-- card.html is the source of website/assets/og-image.png, the 1200x630 link preview. Render it with make website-og. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: #fff7ee;
+    color: #1f2f45;
+    font-family: "Nunito", sans-serif;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(2px); }
+  .blob-a { width: 560px; height: 560px; right: -60px; top: -40px; background: #ffd8cf; }
+  .blob-b { width: 300px; height: 300px; right: 380px; bottom: -150px; background: #ccefe9; }
+  .blob-c { width: 220px; height: 220px; left: -70px; top: -80px; background: #ffeab8; }
+  .text { position: absolute; left: 80px; top: 84px; width: 660px; }
+  .brand {
+    font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 40px;
+  }
+  h1 {
+    margin: 26px 0 0;
+    font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800;
+    font-size: 50px; line-height: 1.14; letter-spacing: -0.01em;
+  }
+  h1 em { font-style: normal; color: #e85d4a; }
+  .features { list-style: none; margin: 36px 0 0; padding: 0; }
+  .features li {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 14px; font-weight: 700; font-size: 27px;
+  }
+  .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #182735; flex: none; }
+  .dot-teal { background: #2a9d8f; }
+  .dot-gold { background: #f2b84b; }
+  .dot-pink { background: #e85d4a; }
+  .mascot { position: absolute; right: 70px; top: 85px; width: 440px; height: 440px; }
+  .url {
+    position: absolute; left: 80px; bottom: 54px;
+    font-weight: 700; font-size: 24px; color: #55627a;
+  }
+</style>
+</head>
+<body>
+  <span class="blob blob-a"></span>
+  <span class="blob blob-b"></span>
+  <span class="blob blob-c"></span>
+  <div class="text">
+    <div class="brand">Karakuri</div>
+    <h1>Flows, dashboards, and agents for your <em>home</em></h1>
+    <ul class="features">
+      <li><span class="dot dot-teal"></span>Flows that retry, then take the error branch</li>
+      <li><span class="dot dot-gold"></span>Wall-tablet dashboards in the same app</li>
+      <li><span class="dot dot-pink"></span>Agents on your NAS, PC, Mac, or Pi</li>
+    </ul>
+  </div>
+  <img class="mascot" src="../../website/assets/kuri.svg" alt="">
+  <div class="url">karakuri.moe · open source, MIT</div>
+</body>
+</html>

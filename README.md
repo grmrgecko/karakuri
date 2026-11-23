@@ -370,7 +370,8 @@ out; JavaScript and Bash scripts work without it.
 `website/` is the karakuri.moe site, plain HTML, CSS, and JavaScript.
 `make website` renders the guides in `docs/` into `website/docs.html` with the
 template in `tools/website-docs/`; run it before publishing the directory. The
-default `make` does not build it.
+default `make` does not build it. `make website-og` renders the link preview image,
+`website/assets/og-image.png`, from `tools/website-og/card.html` with Chromium.
 
 ### Releases
 
